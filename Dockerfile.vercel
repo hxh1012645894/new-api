@@ -1,0 +1,33 @@
+# Vercel Container Image 构建(与官方 Dockerfile 同构,监听 $PORT)
+# 前端(bun)构建
+FROM oven/bun:1 AS web-builder
+WORKDIR /build/web
+COPY web/package.json web/bun.lock ./
+RUN bun install --frozen-lockfile
+COPY ./web ./
+COPY ./VERSION /build/VERSION
+RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat /build/VERSION) bun run build
+
+# Go 后端构建
+FROM golang:1.26.1-alpine AS go-builder
+ENV GO111MODULE=on CGO_ENABLED=0 GOWORK=off
+ENV GOEXPERIMENT=greenteagc
+WORKDIR /build
+ADD go.mod go.sum ./
+ADD relaykit/go.mod ./relaykit/go.mod
+RUN go mod download
+COPY . .
+COPY --from=web-builder /build/web/dist ./web/dist
+RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api
+
+# 运行镜像
+FROM debian:bookworm-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
+COPY --from=go-builder /build/new-api /
+ENV PORT=80
+EXPOSE 80
+WORKDIR /tmp
+CMD ["/new-api"]
