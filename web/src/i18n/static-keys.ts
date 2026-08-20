@@ -572,4 +572,21 @@ export const STATIC_I18N_KEYS = [
   'This user account is disabled.',
   'Telegram binding failed. Please try again.',
   'Verification scope is missing',
+
+  // Company site — FDE appointment request options
+  'Call audit & cost governance',
+  'Enterprise Brain setup',
+  'Joint FDE landing',
+  'Data warehouse & decision engine',
+
+  // Company site — FDE appointment validation messages
+  'Please enter your name',
+  'Name must be within 50 characters',
+  'Please enter your company',
+  'Company must be within 100 characters',
+  'Please enter your title',
+  'Title must be within 50 characters',
+  'Enter a valid email or phone number',
+  'Describe your scenario in at least 10 characters',
+  'Scenario must be within 1000 characters',
 ] as const
