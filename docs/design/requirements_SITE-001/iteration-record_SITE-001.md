@@ -33,3 +33,19 @@
   - 移动端页头补充语言切换（与桌面端对齐），浏览器复验通过（`screenshot-mobile-header.png`）；
   - 不适用的脚手架文档（backend/database/system/ui design、test-plan、bug 系列）标记「本轮不适用」；
   - 提交 `f2454b0d`（54 文件，+3320/-42），未推送（需明确授权）。
+
+### [2026-08-20] v2（PPT 全量 OCR 消化 + 首页文案充实）
+
+- 本次动作：
+  - PPT 全量读取：27 张内嵌图（含 EMF 壳内 JPEG 剥离）经 `http://192.168.10.208:8100` 逐张 OCR，并与接口直读 PPTX 结果合并整理为 `docs/参考资源/iFAi 业务简介_2608C_图片/ocr/iFAi_业务简介_2608C.md`（已去除图片引用干扰，含业务信息总结 + 正文 + 逐页附录）；
+  - 用户澄清 **FDE = Forward Deployed Engineer**，修正首页术语（i18n 7 语言），并更正 OCR 文档中的误读标注；
+  - 依据 PPT 四大业务能力与模型矩阵充实能力链：01 卡片新增成本优化 chips（Prompt/Cache/模型路由/推理调度）、03 FDE 卡片更新为进场交付语义并新增 chips、新增「主流大模型统一接入」模型矩阵条（Claude/GPT/Gemini/Qwen/GLM/KIMI/Seedance）；
+  - i18n：新增 11 键、删除 2 个旧键，走 `add-missing-keys.mjs` 脚本 + `i18n:sync`（临时脚本已删）；
+  - 测试更新（能力链断言扩充），typecheck/lint/test/build 通过，浏览器 zh/en 验证通过。
+- 新增/更新文档：`frontend-design_SITE-001_v2.md`。
+- 用户确认结论：FDE 全称 = Forward Deployed Engineer；示意数据（37.6% 节省率等）与「熵评」名称暂不采用（口径未确认）。
+- 关联分支：直接提交 main（同前）。
+- 测试结论：12/12 通过；浏览器验证新 chips/模型矩阵/FDE 全称均正常。
+- 风险与待办：
+  - image15 示意数据如获确认可作为首页数据背书补充；
+  - image12/21（核心优势、产品与解决方案）OCR 质量差，如需引用建议人工核对原图。

@@ -45,8 +45,15 @@ describe('company site sections', () => {
     expect(screen.getByText('Enterprise Brain')).toBeInTheDocument()
     expect(screen.getByText('EB')).toBeInTheDocument()
     expect(
-      screen.getByText('FDE — Frontline Deployment Engineers')
+      screen.getByText('FDE — Forward Deployed Engineers')
     ).toBeInTheDocument()
+    expect(screen.getByText('Model routing')).toBeInTheDocument()
+    expect(screen.getByText('Workflow reinvention')).toBeInTheDocument()
+    expect(
+      screen.getByText('Unified access to mainstream models')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Claude')).toBeInTheDocument()
+    expect(screen.getByText('Seedance')).toBeInTheDocument()
   })
 
   test('warehouse section maps the three pain points to a layered warehouse', () => {

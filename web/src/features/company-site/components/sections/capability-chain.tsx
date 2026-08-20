@@ -30,6 +30,7 @@ interface ChainItemProps {
   badge?: string
   tagline?: string
   description: string
+  chips?: string[]
 }
 
 function ChainItem(props: ChainItemProps) {
@@ -68,6 +69,18 @@ function ChainItem(props: ChainItemProps) {
         <p className='text-muted-foreground mt-2 max-w-xl text-[15px] leading-relaxed'>
           {props.description}
         </p>
+        {props.chips ? (
+          <div className='mt-4 flex flex-wrap gap-2'>
+            {props.chips.map((chip) => (
+              <span
+                key={chip}
+                className='text-muted-foreground border-border/60 bg-background/60 rounded-md border px-2.5 py-1 text-xs'
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </article>
   )
@@ -120,6 +133,12 @@ export function CapabilityChain() {
             description={t(
               'Plugs into your existing call path and uniformly records token, model, latency and cost attribution — surfacing optimizable models and routing decisions without changing team workflows.'
             )}
+            chips={[
+              t('Prompt optimization'),
+              t('Cache optimization'),
+              t('Model routing'),
+              t('Inference scheduling'),
+            ]}
           />
           <ChainItem
             num='02'
@@ -135,11 +154,38 @@ export function CapabilityChain() {
           <ChainItem
             num='03'
             dotClass='bg-yellow-500'
-            title={t('FDE — Frontline Deployment Engineers')}
+            title={t('FDE — Forward Deployed Engineers')}
             description={t(
-              'Defines metrics, integrates systems and verifies improvements together with your team, turning AI infrastructure from a procurement item into an operable capability.'
+              'Frontline engineers land AI into your real workflows — onboarding and training, agent delivery, workflow reinvention — then verify improvements with your team, turning AI infrastructure from a procurement item into an operable capability.'
             )}
+            chips={[
+              t('Onboarding & training'),
+              t('Agent customization & delivery'),
+              t('Workflow reinvention'),
+            ]}
           />
+        </div>
+
+        <div className='border-border/70 bg-card mt-10 rounded-xl border px-5 py-4'>
+          <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+            <span className='text-muted-foreground text-xs font-medium'>
+              {t('Unified access to mainstream models')}
+            </span>
+            <span className='bg-border/40 h-4 w-px' aria-hidden='true' />
+            {['Claude', 'GPT', 'Gemini', 'Qwen', 'GLM', 'KIMI', 'Seedance'].map(
+              (model) => (
+                <span
+                  key={model}
+                  className='border-border/60 bg-background rounded-md border px-2.5 py-1 text-xs font-medium'
+                >
+                  {model}
+                </span>
+              )
+            )}
+            <span className='text-muted-foreground/70 text-xs'>
+              {t('More models joining')}
+            </span>
+          </div>
         </div>
 
         <div className='mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
