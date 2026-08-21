@@ -1,0 +1,135 @@
+- generic [ref=f1e2] [box=0,0,1429,5471]:
+  - generic [ref=f1e5] [box=0,0,1429,5471]:
+    - banner [box=0,0,1429,64]:
+      - navigation [ref=f1e7] [box=99,0,1232,64]:
+        - link "logo iFAi" [ref=f1e9] [cursor=pointer] [box=107,18,62,28]:
+          - /url: /
+          - img "logo" [ref=f1e11] [box=107,18,28,28]
+          - generic [ref=f1e12] [box=145,22,24,20]: iFAi
+        - generic [ref=f1e13] [box=799,14,524,36]:
+          - link "主页" [ref=f1e14] [cursor=pointer] [box=799,16,52,32]:
+            - /url: /
+          - link "控制台" [ref=f1e15] [cursor=pointer] [box=853,16,66,32]:
+            - /url: /dashboard
+          - link "模型广场" [ref=f1e16] [cursor=pointer] [box=921,16,80,32]:
+            - /url: /pricing
+          - link "排行榜" [ref=f1e17] [cursor=pointer] [box=1003,16,66,32]:
+            - /url: /rankings
+          - link "关于" [ref=f1e18] [cursor=pointer] [box=1071,16,52,32]:
+            - /url: /about
+          - button "更改语言" [ref=f1e20] [cursor=pointer] [box=1144,14,36,36]
+          - button "切换主题" [ref=f1e22] [cursor=pointer] [box=1182,14,36,36]
+          - button "通知" [ref=f1e24] [cursor=pointer] [box=1220,14,36,36]
+          - button "登录" [ref=f1e27] [cursor=pointer] [box=1269,16,54,32]
+    - main [ref=f1e28] [box=0,0,1429,5194]:
+      - generic [ref=f1e30] [box=139,0,1152,680]:
+        - generic [ref=f1e31] [box=163,185,572,390]:
+          - generic [ref=f1e32] [box=163,185,165,31]: iFAi / 企业级 AI 基础设施
+          - heading "Every Token Counts." [level=1] [ref=f1e37] [box=163,239,572,169]
+          - paragraph [ref=f1e39] [box=163,433,470,28]: 让每次 Token 调用都可解释，让每份账单都可审计。
+          - paragraph [ref=f1e40] [box=163,472,448,23]: 为 10–100 人技术团队建立可控、可查、可优化的 AI 基础设施。
+          - generic [ref=f1e41] [box=163,531,572,44]
+        - img "Token 审计闭环示意" [ref=f1e45] [box=813,160,440,440]:
+          - generic [ref=f1e48] [box=989,336,88,88]: TOKENTRACE
+          - generic [ref=f1e54] [box=1050,227,23,17]: 调用
+          - generic [ref=f1e57] [box=1215,415,23,17]: 归因
+          - generic [ref=f1e60] [box=1050,517,23,17]: 账单
+          - generic [ref=f1e63] [box=827,415,23,17]: 优化
+      - generic [ref=f1e65] [box=139,681,1152,608]:
+        - generic [ref=f1e66] [box=163,793,1104,117]:
+          - generic [ref=f1e67] [box=163,793,524,117]
+          - paragraph [ref=f1e69] [box=827,861,440,49]: 当费用只按模型或项目聚合，你无法解释一笔成本由谁、在何种请求、以什么响应质量产生。优化从猜测开始，审计无从落笔。
+        - generic [ref=f1e70] [box=163,974,1104,204]:
+          - generic [ref=f1e71] [box=164,975,1102,45]
+          - generic [ref=f1e74] [box=164,1020,1102,53]
+          - generic [ref=f1e79] [box=164,1072,1102,53]
+          - generic [ref=f1e84] [box=164,1125,1102,52]
+      - generic [ref=f1e90] [box=139,1290,1152,1001]:
+        - generic [ref=f1e91] [box=163,1402,1104,117]:
+          - generic [ref=f1e92] [box=163,1402,524,117]
+          - paragraph [ref=f1e94] [box=827,1470,440,49]: iFAi 提供 Token 供给，建设企业决策大脑，并派出工程师深入现场，将真实业务难题转化为可运行的 AI。
+        - generic [ref=f1e95] [box=163,1583,1104,288]:
+          - article [ref=f1e96] [box=163,1583,357,288]
+          - article [ref=f1e109] [box=536,1583,357,288]
+          - article [ref=f1e122] [box=909,1583,357,288]
+        - generic [ref=f1e135] [box=184,1928,1062,26]:
+          - generic [ref=f1e136] [box=184,1933,108,16]: 主流大模型统一接入
+          - generic [ref=f1e138] [box=317,1928,61,26]: Claude
+          - generic [ref=f1e139] [box=390,1928,46,26]: GPT
+          - generic [ref=f1e140] [box=448,1928,62,26]: Gemini
+          - generic [ref=f1e141] [box=522,1928,54,26]: Qwen
+          - generic [ref=f1e142] [box=588,1928,49,26]: GLM
+          - generic [ref=f1e143] [box=649,1928,47,26]: KIMI
+          - generic [ref=f1e144] [box=708,1928,78,26]: Seedance
+          - generic [ref=f1e145] [box=798,1933,84,16]: 更多模型接入中
+        - generic [ref=f1e146] [box=163,2011,1104,112]:
+          - generic [ref=f1e147] [box=163,2011,267,112]
+          - generic [ref=f1e152] [box=442,2011,267,112]
+          - generic [ref=f1e157] [box=721,2011,267,112]
+          - generic [ref=f1e162] [box=1000,2011,267,112]
+        - paragraph [ref=f1e167] [box=163,2163,1104,17]: ｜ 通 Token ｜ 通数据 ｜ 通业务 ｜
+      - generic [ref=f1e169] [box=139,2293,1152,899]:
+        - generic [ref=f1e170] [box=163,2405,1104,117]:
+          - generic [ref=f1e171] [box=163,2405,524,117]
+          - paragraph [ref=f1e173] [box=827,2472,440,49]: 默认脱敏。摘要留存 90 天。为企业保留足够的上下文用于审计与优化，同时规避敏感内容变成数据安全风险。
+        - generic [ref=f1e174] [box=163,2585,1104,108]:
+          - generic [ref=f1e175] [box=163,2585,258,108]
+          - generic [ref=f1e179] [box=445,2585,258,108]
+          - generic [ref=f1e183] [box=727,2585,258,108]
+          - generic [ref=f1e187] [box=1009,2585,258,108]
+        - generic [ref=f1e191] [box=163,2749,1104,281]:
+          - generic [ref=f1e192] [box=164,2750,1102,44]
+          - generic [ref=f1e195] [box=164,2794,1102,235]
+        - generic [ref=f1e233] [box=163,3050,1104,30]:
+          - generic [ref=f1e234] [box=163,3050,122,30]: 敏感内容默认脱敏
+          - generic [ref=f1e235] [box=297,3050,108,30]: 摘要留存 90 天
+          - generic [ref=f1e236] [box=417,3050,122,30]: 权限范围内可追溯
+          - paragraph [ref=f1e237] [box=1087,3057,180,16]: 平衡兼顾优化、审计与数据安全。
+      - generic [ref=f1e239] [box=139,3193,1152,1289]:
+        - generic [ref=f1e240] [box=163,3305,1104,76]:
+          - generic [ref=f1e241] [box=163,3305,524,76]
+          - paragraph [ref=f1e243] [box=827,3332,440,49]: iFAi 快速连接分散的业务系统，建设 ODS/DWD/DWS/ADS 分层数仓，并为 AI 提供权限可控、证据可追溯的数据检索与决策层。
+        - generic [ref=f1e244] [box=163,3445,1104,91]:
+          - generic [ref=f1e245] [box=163,3445,360,91]
+          - generic [ref=f1e250] [box=535,3445,360,91]
+          - generic [ref=f1e255] [box=907,3445,360,91]
+        - generic [ref=f1e260] [box=163,3568,1104,494]:
+          - generic [ref=f1e261] [box=188,3593,1054,92]
+          - generic [ref=f1e275] [box=188,3709,1054,92]
+          - generic [ref=f1e289] [box=188,3825,1054,96]
+          - generic [ref=f1e311] [box=188,3945,1054,92]
+        - generic [ref=f1e326] [box=184,4099,1062,20]:
+          - generic [ref=f1e327] [box=184,4099,130,20]: 数据安全贯穿全部层级
+          - generic [ref=f1e328] [box=326,4099,337,20]: — 表级授权 · 列级掩码 · 行级 RLS · AD 身份 · 审计留痕
+        - generic [ref=f1e329] [box=163,4176,1104,194]:
+          - generic [ref=f1e330] [box=163,4176,360,91]
+          - generic [ref=f1e335] [box=535,4176,360,91]
+          - generic [ref=f1e340] [box=907,4176,360,91]
+          - generic [ref=f1e345] [box=163,4279,360,91]
+          - generic [ref=f1e350] [box=535,4279,360,91]
+          - generic [ref=f1e355] [box=907,4279,360,91]
+      - generic [ref=f1e361] [box=139,4483,1152,711]:
+        - generic [ref=f1e362] [box=163,4595,461,244]:
+          - text: 05 / 与 iFAi 合作
+          - heading "带着一个真实场景，和 FDE 一起把它落地。" [level=2] [ref=f1e363] [box=163,4631,461,88]
+          - paragraph [ref=f1e364] [box=163,4739,340,49]: 告诉我们你正在运行的 AI 业务。我们将在 24 小时内回复，确认是否适合共同推进。
+          - paragraph [ref=f1e365] [box=163,4820,300,20]: 你的信息仅用于评估与跟进 FDE 合作诉求。
+        - generic [ref=f1e366] [box=703,4595,563,487]:
+          - generic [ref=f1e367] [box=736,4628,497,361]
+          - generic [ref=f1e387] [box=736,5017,497,32]
+    - contentinfo [ref=f1e390] [box=0,5194,1429,278]:
+      - generic [ref=f1e391] [box=139,5195,1152,277]:
+        - generic [ref=f1e393] [box=163,5259,110,60]:
+          - link "iFAi iFAi" [ref=f1e394] [cursor=pointer] [box=163,5259,110,28]:
+            - /url: /
+          - paragraph [ref=f1e397] [box=163,5299,110,20]: 强大的 API 管理平台
+        - generic [ref=f1e398] [box=163,5366,1104,41]:
+          - generic [ref=f1e399] [box=163,5391,135,16]: © 2026 iFAi. 版权所有。
+          - generic [ref=f1e402] [box=961,5391,305,17]
+  - region "Notifications alt+T" [box=0,5471,1429,0]
+  - button "Open Tanstack query devtools" [ref=f1e454] [cursor=pointer] [box=16,844,40,40]
+  - generic [box=0,5471,1429,0]:
+    - contentinfo [box=0,5471,1429,0]:
+      - button "Open TanStack Router Devtools" [ref=f1e503] [cursor=pointer] [box=1272,862,149,30]:
+        - generic [ref=f1e575] [box=1307,868,1,18]: "-"
+        - generic [ref=f1e576] [box=1316,871,96,12]: TanStack Router

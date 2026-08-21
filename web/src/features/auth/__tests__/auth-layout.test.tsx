@@ -19,34 +19,45 @@ For commercial licensing, please contact support@quantumnous.com
 import { render, screen } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
-import { Footer } from '../footer'
+import { AuthLayout } from '../auth-layout'
 
 vi.mock('@tanstack/react-router', () => ({
-  Link: (props: { children: React.ReactNode; to: string }) => (
-    <a href={props.to}>{props.children}</a>
+  Link: (props: {
+    'aria-label'?: string
+    children: React.ReactNode
+    className?: string
+    to: string
+  }) => (
+    <a
+      href={props.to}
+      aria-label={props['aria-label']}
+      className={props.className}
+    >
+      {props.children}
+    </a>
   ),
-}))
-
-vi.mock('@/hooks/use-status', () => ({
-  useStatus: () => ({ status: {} }),
 }))
 
 vi.mock('@/hooks/use-system-config', () => ({
   useSystemConfig: () => ({
     systemName: 'New API',
     logo: '/logo.png',
-    footerHtml: '<p>Custom deployment footer</p>',
-    demoSiteEnabled: false,
+    loading: false,
   }),
 }))
 
-describe('Footer', () => {
-  test('keeps an explicitly supplied company brand when custom footer HTML is configured', () => {
-    render(<Footer logo='/ifai-logo.png' name='iFAi' />)
+describe('AuthLayout branding', () => {
+  test('shows the system brand, with no operator brand beside it', () => {
+    render(
+      <AuthLayout>
+        <p>Authentication content</p>
+      </AuthLayout>
+    )
 
-    const companyLogo = screen.getByRole('img', { name: 'iFAi' })
-    expect(companyLogo).toHaveAttribute('src', '/ifai-logo.png')
-    expect(companyLogo).toHaveClass('rounded-full')
-    expect(screen.getByText('Custom deployment footer')).toBeInTheDocument()
+    expect(screen.getByText('New API')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: 'iFAi · 皋如信息科技有限公司' })
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Authentication content')).toBeInTheDocument()
   })
 })

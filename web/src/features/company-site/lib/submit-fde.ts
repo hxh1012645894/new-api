@@ -20,23 +20,8 @@ import { api } from '@/lib/api'
 
 import type { FdeAppointmentValues } from './schema'
 
-/**
- * Submits an FDE appointment.
- *
- * Configure `VITE_FDE_FORM_ENDPOINT` (an absolute URL, e.g. a form backend or
- * webhook) to deliver appointments in production. When it is unset the form
- * runs in demo mode and only simulates the round trip so the loading/success
- * states remain exercisable, matching the reference demo behavior.
- */
 export async function submitFdeAppointment(
   values: FdeAppointmentValues
 ): Promise<void> {
-  const endpoint = (
-    import.meta.env.VITE_FDE_FORM_ENDPOINT as string | undefined
-  )?.trim()
-  if (!endpoint) {
-    await new Promise((resolve) => setTimeout(resolve, 900))
-    return
-  }
-  await api.post(endpoint, values)
+  await api.post('/api/fde/appointments', values)
 }

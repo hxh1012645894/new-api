@@ -66,7 +66,17 @@ func InitOptionMap() {
 	common.OptionMap["SMTPStartTLSEnabled"] = strconv.FormatBool(common.SMTPStartTLSEnabled)
 	common.OptionMap["SMTPInsecureSkipVerify"] = strconv.FormatBool(common.SMTPInsecureSkipVerify)
 	common.OptionMap["SMTPForceAuthLogin"] = strconv.FormatBool(common.SMTPForceAuthLogin)
-	common.OptionMap["Notice"] = ""
+	common.OptionMap["Notice"] = `## iFAi 定价模式
+
+规模越大，成本越低，价值越高。
+
+| 企业月规模 | Claude Code | Seedance | 其他模型 | 备注 |
+| --- | --- | --- | --- | --- |
+| < 7 万 RMB/月 | 92 折 | 98 折 | 88 折 | DeepSeek 建议官网直连 |
+| 7 万～70 万 RMB/月 | 88 折 | 98 折 | 85 折 | DeepSeek 建议官网直连 |
+| > 70 万 RMB/月 | 面议 | 98 折 | 面议 | DeepSeek 建议官网直连 |
+
+最终用户界面展示模型官网输入、输出与缓存命中价格；实际折扣和扣费由后台配置，并保持可查、可追溯。`
 	common.OptionMap["About"] = ""
 	common.OptionMap["HomePageContent"] = ""
 	common.OptionMap["Footer"] = common.Footer

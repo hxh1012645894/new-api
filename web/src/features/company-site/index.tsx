@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Footer } from '@/components/layout/components/footer'
+import { PublicHeader } from '@/components/layout/components/public-header'
 
 import { AuditTrail } from './components/sections/audit-trail'
 import { CapabilityChain } from './components/sections/capability-chain'
@@ -24,7 +25,6 @@ import { FdeSection } from './components/sections/fde-section'
 import { Hero } from './components/sections/hero'
 import { Pain } from './components/sections/pain'
 import { Warehouse } from './components/sections/warehouse'
-import { SiteHeader } from './components/site-header'
 
 const COMPANY_FOOTER_COLUMNS = [
   {
@@ -52,7 +52,7 @@ const COMPANY_FOOTER_COLUMNS = [
 export function CompanySite() {
   return (
     <div className='bg-background text-foreground relative min-h-svh overflow-x-clip'>
-      <SiteHeader />
+      <PublicHeader />
       <main>
         <Hero />
         <Pain />
@@ -61,11 +61,7 @@ export function CompanySite() {
         <Warehouse />
         <FdeSection />
       </main>
-      <Footer
-        name='iFAi'
-        copyright='皋如信息科技有限公司 · iFAi'
-        columns={COMPANY_FOOTER_COLUMNS}
-      />
+      <Footer columns={COMPANY_FOOTER_COLUMNS} />
     </div>
   )
 }
