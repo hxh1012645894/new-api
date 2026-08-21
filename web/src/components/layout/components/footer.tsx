@@ -158,8 +158,9 @@ export function Footer(props: FooterProps) {
     demoSiteEnabled,
   } = useSystemConfig()
 
-  const displayLogo = systemLogo || props.logo || '/logo.png'
-  const displayName = systemName || props.name || 'New API'
+  const displayLogo = props.logo || systemLogo || '/logo.png'
+  const displayName = props.name || systemName || 'New API'
+  const hasExplicitBrand = Boolean(props.logo || props.name)
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
 
@@ -232,10 +233,28 @@ export function Footer(props: FooterProps) {
       >
         <div className='mx-auto w-full max-w-6xl px-6 py-5'>
           <div className='bg-muted/20 border-border/50 flex flex-col items-center justify-between gap-4 rounded-2xl border px-4 py-4 backdrop-blur-sm sm:flex-row sm:px-5'>
-            <div
-              className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
-              dangerouslySetInnerHTML={{ __html: footerHtml }}
-            />
+            <div className='flex min-w-0 flex-1 flex-col items-center gap-3 sm:flex-row'>
+              {hasExplicitBrand && (
+                <Link
+                  to='/'
+                  className='text-foreground flex shrink-0 items-center gap-2'
+                >
+                  <img
+                    src={displayLogo}
+                    alt={displayName}
+                    className={cn(
+                      'size-7 object-contain',
+                      hasExplicitBrand ? 'rounded-full' : 'rounded-lg'
+                    )}
+                  />
+                  <span className='text-sm font-semibold'>{displayName}</span>
+                </Link>
+              )}
+              <div
+                className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
+                dangerouslySetInnerHTML={{ __html: footerHtml }}
+              />
+            </div>
             <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-xs sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
               <ProjectAttribution currentYear={currentYear} inline />
@@ -258,7 +277,10 @@ export function Footer(props: FooterProps) {
               <img
                 src={displayLogo}
                 alt={displayName}
-                className='size-7 rounded-lg object-contain'
+                className={cn(
+                  'size-7 object-contain',
+                  hasExplicitBrand ? 'rounded-full' : 'rounded-lg'
+                )}
               />
               <span className='text-sm font-semibold tracking-tight'>
                 {displayName}
@@ -272,14 +294,14 @@ export function Footer(props: FooterProps) {
           {/* Links columns */}
           {isDemoSiteMode && (
             <div className='grid grid-cols-3 gap-8 md:gap-16'>
-              {displayColumns.map((column, index) => (
-                <div key={index}>
+              {displayColumns.map((column) => (
+                <div key={column.title}>
                   <p className='text-muted-foreground/50 mb-3 text-xs font-medium tracking-wider uppercase'>
                     {t(column.title)}
                   </p>
                   <ul className='space-y-2.5'>
-                    {column.links.map((link, linkIndex) => (
-                      <li key={linkIndex}>
+                    {column.links.map((link) => (
+                      <li key={`${link.href}-${link.text}`}>
                         <FooterLinkItem link={link} />
                       </li>
                     ))}
@@ -295,8 +317,9 @@ export function Footer(props: FooterProps) {
         <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-x-3 gap-y-2 border-t pt-6 sm:flex-row'>
           <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs sm:justify-start'>
             <span>
-              &copy; {currentYear} {displayName}.{' '}
-              {props.copyright ?? t('footer.defaultCopyright')}
+              &copy; {currentYear}{' '}
+              {props.copyright ??
+                `${displayName}. ${t('footer.defaultCopyright')}`}
             </span>
             <LegalLinks leadingSeparator />
           </div>
