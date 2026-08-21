@@ -57,6 +57,18 @@ describe('FDE appointment schema', () => {
     }
   })
 
+  test('rejects a contact longer than the database field capacity', () => {
+    const result = fdeAppointmentSchema.safeParse(
+      validAppointment({ contact: `${'a'.repeat(190)}@example.com` })
+    )
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toBe(
+        'Contact must be within 200 characters'
+      )
+    }
+  })
+
   test('rejects a scenario shorter than 10 characters', () => {
     const result = fdeAppointmentSchema.safeParse(
       validAppointment({ scenario: '太短' })

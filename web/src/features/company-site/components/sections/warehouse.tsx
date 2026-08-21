@@ -16,7 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -57,7 +58,11 @@ function LayerArrow() {
       aria-hidden='true'
       className='text-muted-foreground flex justify-center py-1'
     >
-      <ArrowDown className='size-4' />
+      <HugeiconsIcon
+        icon={ArrowDown01Icon}
+        strokeWidth={2}
+        className='size-4'
+      />
     </div>
   )
 }
@@ -124,9 +129,9 @@ export function Warehouse() {
       <div className='mx-auto max-w-6xl px-6 py-20 md:py-28'>
         <SectionHead
           eyebrow={t('04 / Data warehouse')}
-          title={t('Beyond tokens: a warehouse for business decisions.')}
+          title={t('Your company data, ready for AI decisions.')}
           description={t(
-            'Disconnected systems, broken links and hand-written SQL keep business data from becoming decision power. iFAi lands a layered warehouse, an AI development chain and a decision engine on an open ecosystem.'
+            'iFAi rapidly connects scattered business systems, builds an ODS/DWD/DWS/ADS warehouse, and gives AI a permission-aware retrieval and decision layer with traceable evidence.'
           )}
         />
 

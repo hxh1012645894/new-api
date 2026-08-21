@@ -34,14 +34,12 @@ describe('company site sections', () => {
     expect(screen.getAllByText('Not explainable per call')).toHaveLength(3)
   })
 
-  test('capability chain renders the three layers with the EB badge highlighted', () => {
+  test('capability chain explains the three company businesses and their outcomes', () => {
     render(<CapabilityChain />)
     expect(
-      screen.getByText('From one integration to an explainable business chain.')
+      screen.getByText('Three businesses, one path from tokens to outcomes.')
     ).toBeInTheDocument()
-    expect(
-      screen.getByText('Token Access & Cost Optimization')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Token Supply')).toBeInTheDocument()
     expect(screen.getByText('Enterprise Brain')).toBeInTheDocument()
     expect(screen.getByText('EB')).toBeInTheDocument()
     expect(
@@ -49,11 +47,28 @@ describe('company site sections', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Model routing')).toBeInTheDocument()
     expect(screen.getByText('Workflow reinvention')).toBeInTheDocument()
+    expect(screen.getByText('AI-ready data warehouse')).toBeInTheDocument()
+    expect(screen.getByText('Evidence-backed decisions')).toBeInTheDocument()
     expect(
       screen.getByText('Unified access to mainstream models')
     ).toBeInTheDocument()
     expect(screen.getByText('Claude')).toBeInTheDocument()
     expect(screen.getByText('Seedance')).toBeInTheDocument()
+
+    const businessCards = [
+      screen.getByRole('heading', { name: 'Token Supply' }).closest('article'),
+      screen
+        .getByRole('heading', { name: 'Enterprise Brain' })
+        .closest('article'),
+      screen
+        .getByRole('heading', { name: 'FDE — Forward Deployed Engineers' })
+        .closest('article'),
+    ]
+    expect(businessCards.every(Boolean)).toBe(true)
+    expect(new Set(businessCards.map((card) => card?.parentElement)).size).toBe(
+      1
+    )
+    expect(businessCards[0]?.parentElement).toHaveClass('lg:grid-cols-3')
   })
 
   test('warehouse section maps the three pain points to a layered warehouse', () => {

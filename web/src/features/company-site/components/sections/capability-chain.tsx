@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
 
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 import { SectionHead } from '../section-head'
@@ -25,7 +26,6 @@ import { SectionHead } from '../section-head'
 interface ChainItemProps {
   num: string
   dotClass: string
-  highlighted?: boolean
   title: string
   badge?: string
   tagline?: string
@@ -35,18 +35,8 @@ interface ChainItemProps {
 
 function ChainItem(props: ChainItemProps) {
   return (
-    <article
-      className={cn(
-        'grid grid-cols-[48px_1fr] gap-6 py-8',
-        props.highlighted
-          ? 'border-violet-500/30 bg-violet-500/[0.05] rounded-xl border px-4 sm:px-6'
-          : 'border-border/40 border-b'
-      )}
-    >
-      <span className='text-muted-foreground pt-1.5 font-mono text-xs'>
-        {props.num}
-      </span>
-      <div>
+    <article className='border-border/70 bg-card flex h-full flex-col rounded-xl border p-5 sm:p-6'>
+      <div className='flex items-start justify-between gap-4'>
         <div className='flex flex-wrap items-center gap-3'>
           <span
             className={cn('size-2.5 rounded-full', props.dotClass)}
@@ -56,32 +46,30 @@ function ChainItem(props: ChainItemProps) {
             {props.title}
           </h3>
           {props.badge ? (
-            <span className='rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-bold tracking-[0.08em] text-violet-600 dark:text-violet-400'>
-              {props.badge}
-            </span>
+            <Badge variant='secondary'>{props.badge}</Badge>
           ) : null}
         </div>
-        {props.tagline ? (
-          <p className='mt-1 text-[13px] font-medium text-violet-600 dark:text-violet-400'>
-            {props.tagline}
-          </p>
-        ) : null}
-        <p className='text-muted-foreground mt-2 max-w-xl text-[15px] leading-relaxed'>
-          {props.description}
-        </p>
-        {props.chips ? (
-          <div className='mt-4 flex flex-wrap gap-2'>
-            {props.chips.map((chip) => (
-              <span
-                key={chip}
-                className='text-muted-foreground border-border/60 bg-background/60 rounded-md border px-2.5 py-1 text-xs'
-              >
-                {chip}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <span className='text-muted-foreground pt-1 font-mono text-xs'>
+          {props.num}
+        </span>
       </div>
+      {props.tagline ? (
+        <p className='text-primary mt-2 text-[13px] font-medium'>
+          {props.tagline}
+        </p>
+      ) : null}
+      <p className='text-muted-foreground mt-3 flex-1 text-[15px] leading-relaxed'>
+        {props.description}
+      </p>
+      {props.chips ? (
+        <div className='mt-5 flex flex-wrap gap-2'>
+          {props.chips.map((chip) => (
+            <Badge key={chip} variant='outline'>
+              {chip}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
     </article>
   )
 }
@@ -120,43 +108,51 @@ export function CapabilityChain() {
       <div className='mx-auto max-w-6xl px-6 py-20 md:py-28'>
         <SectionHead
           eyebrow={t('02 / Capability chain')}
-          title={t('From one integration to an explainable business chain.')}
+          title={t('Three businesses, one path from tokens to outcomes.')}
           description={t(
-            'Not just another dashboard. iFAi folds requests, costs, organizational knowledge and field engineering into a loop that keeps running.'
+            'iFAi supplies the tokens, builds the enterprise decision brain, and sends engineers into the field to turn real business problems into working AI.'
           )}
         />
-        <div>
+        <div className='grid gap-4 lg:grid-cols-3'>
           <ChainItem
             num='01'
             dotClass='bg-blue-500'
-            title={t('Token Access & Cost Optimization')}
+            title={t('Token Supply')}
+            tagline={t(
+              'Buy tokens with governed access and transparent billing'
+            )}
             description={t(
-              'Plugs into your existing call path and uniformly records token, model, latency and cost attribution — surfacing optimizable models and routing decisions without changing team workflows.'
+              'Buy and govern tokens for mainstream models through one gateway. Official-list input, output and cache-hit prices stay visible while actual discounts and every deduction remain traceable.'
             )}
             chips={[
-              t('Prompt optimization'),
-              t('Cache optimization'),
+              t('Usage-based token purchase'),
+              t('Unified model access'),
               t('Model routing'),
-              t('Inference scheduling'),
+              t('Cost optimization'),
             ]}
           />
           <ChainItem
             num='02'
             dotClass='bg-violet-500'
-            highlighted
             badge='EB'
             title={t('Enterprise Brain')}
-            tagline={t('EB assists enterprise decisions')}
+            tagline={t('Turn company data into AI decision infrastructure')}
             description={t(
-              'Brings enterprise knowledge within permission boundaries into a searchable, governable reasoning layer. Every citation and every answer carries a traceable context.'
+              'Rapidly turn scattered ERP, MES, CRM and operational data into a layered, permission-aware warehouse that AI can retrieve and use for evidence-backed decisions.'
             )}
+            chips={[
+              t('AI-ready data warehouse'),
+              'ODS · DWD · DWS · ADS',
+              t('Evidence-backed decisions'),
+            ]}
           />
           <ChainItem
             num='03'
             dotClass='bg-yellow-500'
             title={t('FDE — Forward Deployed Engineers')}
+            tagline={t('Bring a business problem; leave with working AI')}
             description={t(
-              'Frontline engineers land AI into your real workflows — onboarding and training, agent delivery, workflow reinvention — then verify improvements with your team, turning AI infrastructure from a procurement item into an operable capability.'
+              'Forward Deployed Engineers work beside your team to frame the bottleneck, design the AI solution, ship it into the real workflow and verify the business result quickly.'
             )}
             chips={[
               t('Onboarding & training'),

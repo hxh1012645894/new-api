@@ -49,3 +49,12 @@
 - 风险与待办：
   - image15 示意数据如获确认可作为首页数据背书补充；
   - image12/21（核心优势、产品与解决方案）OCR 质量差，如需引用建议人工核对原图。
+
+### [2026-08-20] v3（公司业务、系统品牌配置、定价通知与 FDE 预约落库）
+
+- 本次动作：恢复公司首页原 `PublicHeader` 导航；将 Token 供给、Enterprise Brain、FDE 改为三项平级主营业务；首页、登录页、控制台和 Footer 复用单一系统配置品牌；把参考资源中的三档定价写入默认系统通知；新增 FDE 预约公开 API 与数据库表。
+- 后端：新增 `POST /api/fde/appointments`，按 Router → Controller → Service → Model 分层；服务端规范化并验证 Unicode 长度、邮箱/手机号和合作诉求白名单；GORM 自动迁移 `fde_appointments`，状态固定 `pending`，错误响应和普通日志不记录表单 PII。
+- 前端：FDE 表单固定调用同源 API，覆盖 invalid/loading/error/success；新增可选静态资源 `/ifai-logo.png`，但不改默认 Logo/favicon/名称；七语言补齐 17 个新增业务/校验文案。
+- 测试结论：Go 全量测试与构建通过；最终发布范围 Vitest 18/18、TypeScript、生产构建通过；Playwright 在 1440×900 与 390×844 覆盖中英、明暗、原导航、移动菜单焦点循环、定价通知、表单校验和真实 SQLite 落库，无横向页面溢出；最终单品牌候选由 AppHeader/AuthLayout 组件测试复核。
+- 数据处理：浏览器验收记录以 `site001-v3@example.com` 写入一条 `pending` 记录，核对字段后已按精确 ID/联系方式删除测试数据；无客户历史数据回填。
+- Git：使用 `codex/site-001-company-site` 发布分支；用户已授权提交、推送与服务器同步，不合并默认分支；`.codegraph/`、`docs/参考资源/`、受保护品牌替换和数据库品牌写入不纳入发布。

@@ -16,11 +16,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+
+import { api } from '@/lib/api'
 
 import { FdeForm } from '../components/fde-form'
+
+vi.mock('@/lib/api', () => ({
+  api: {
+    post: vi.fn(),
+  },
+}))
+
+const postMock = vi.mocked(api.post)
 
 function fillValidAppointment(user: ReturnType<typeof userEvent.setup>) {
   return user
@@ -44,14 +55,32 @@ function fillValidAppointment(user: ReturnType<typeof userEvent.setup>) {
     )
 }
 
+function renderFdeForm() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false },
+      queries: { retry: false },
+    },
+  })
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <FdeForm />
+    </QueryClientProvider>
+  )
+}
+
 describe('FDE appointment form', () => {
+  beforeEach(() => {
+    postMock.mockResolvedValue({ data: { success: true, data: { id: 1 } } })
+  })
+
   afterEach(() => {
-    vi.useRealTimers()
+    vi.clearAllMocks()
   })
 
   test('shows field errors and keeps the form when required fields are invalid', async () => {
     const user = userEvent.setup()
-    render(<FdeForm />)
+    renderFdeForm()
 
     await user.click(screen.getByRole('button', { name: 'Book FDE' }))
 
@@ -71,7 +100,7 @@ describe('FDE appointment form', () => {
 
   test('rejects a contact that is neither email nor phone', async () => {
     const user = userEvent.setup()
-    render(<FdeForm />)
+    renderFdeForm()
 
     await user.type(screen.getByLabelText('Contact'), 'not-a-contact')
     await user.click(screen.getByRole('button', { name: 'Book FDE' }))
@@ -83,10 +112,19 @@ describe('FDE appointment form', () => {
 
   test('shows the success state after a valid submission completes', async () => {
     const user = userEvent.setup()
-    render(<FdeForm />)
+    renderFdeForm()
 
     await fillValidAppointment(user)
     await user.click(screen.getByRole('button', { name: 'Book FDE' }))
+
+    expect(postMock).toHaveBeenCalledWith('/api/fde/appointments', {
+      name: '张三',
+      company: '皋如信息科技',
+      title: '技术负责人',
+      contact: 'zhangsan@example.com',
+      scenario: '面向客户的智能客服，每天约十万次调用。',
+      request: 'Call audit & cost governance',
+    })
 
     expect(
       await screen.findByText(
@@ -95,5 +133,32 @@ describe('FDE appointment form', () => {
         { timeout: 3000 }
       )
     ).toBeInTheDocument()
+  })
+
+  test('disables submission and shows pending feedback while the API is running', async () => {
+    postMock.mockImplementationOnce(() => new Promise(() => {}))
+    const user = userEvent.setup()
+    renderFdeForm()
+
+    await fillValidAppointment(user)
+    await user.click(screen.getByRole('button', { name: 'Book FDE' }))
+
+    const pendingLabel = await screen.findByText('Submitting…')
+    expect(pendingLabel.closest('button')).toBeDisabled()
+  })
+
+  test('keeps the entered appointment and shows an error when the API fails', async () => {
+    postMock.mockRejectedValueOnce(new Error('network unavailable'))
+    const user = userEvent.setup()
+    renderFdeForm()
+
+    await fillValidAppointment(user)
+    await user.click(screen.getByRole('button', { name: 'Book FDE' }))
+
+    expect(
+      await screen.findByText('Failed to submit. Please try again.')
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Name')).toHaveValue('张三')
+    expect(screen.getByLabelText('Contact')).toHaveValue('zhangsan@example.com')
   })
 })
