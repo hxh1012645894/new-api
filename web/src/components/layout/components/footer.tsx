@@ -121,9 +121,16 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
   )
 }
 
+// Toggle for the "© <year> New API …" project attribution in the footer.
+// Intentionally disabled; set to true to re-enable rendering.
+const SHOW_PROJECT_ATTRIBUTION = false
+
 // inline=true returns just the inner span for composition in a parent flex
 // row. inline=false wraps in a centered/right-aligned div (default).
 function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
+  if (!SHOW_PROJECT_ATTRIBUTION) {
+    return null
+  }
   const { t } = useTranslation()
   const content = (
     <span className='text-muted-foreground/45'>
