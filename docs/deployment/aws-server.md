@@ -56,11 +56,18 @@ new-api ──▶ pgsql(postgres:16-alpine,数据持久化在 /data/pgsql)
 ## 发布流程
 
 1. 代码推送到 GitHub main → Actions 自动构建镜像推 GHCR(`.github/workflows/build-image.yml`)
-2. 服务器拉取并重启:
+2. 服务器拉取并**重建容器**:
 
 ```bash
-sudo docker pull ghcr.io/hxh1012645894/new-api:latest && sudo docker restart new-api
+sudo docker pull ghcr.io/hxh1012645894/new-api:latest && \
+sudo docker rm -f new-api && \
+sudo docker run -d --name new-api --network newapi-net \
+  -e SQL_DSN='postgres://newapi:<DB_PASSWORD>@pgsql:5432/newapi' \
+  -e TZ=Asia/Shanghai --restart always \
+  ghcr.io/hxh1012645894/new-api:latest
 ```
+
+> ⚠️ **不要用 `docker restart` 发布更新**:容器在创建时就绑定了当时的镜像,`restart` 只重启同一容器,仍运行旧镜像。必须 `rm -f` + `run` 重建容器,pull 的新镜像才会生效(实际踩过的坑:前端一直显示旧版本)。
 
 ## 域名(DNS)
 
