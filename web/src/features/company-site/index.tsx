@@ -19,18 +19,17 @@ For commercial licensing, please contact support@quantumnous.com
 import { Footer } from '@/components/layout/components/footer'
 import { PublicHeader } from '@/components/layout/components/public-header'
 
-import { AuditTrail } from './components/sections/audit-trail'
 import { CapabilityChain } from './components/sections/capability-chain'
 import { FdeSection } from './components/sections/fde-section'
 import { Hero } from './components/sections/hero'
-import { Pain } from './components/sections/pain'
+import { TokenToDeal } from './components/sections/token-to-deal'
 import { Warehouse } from './components/sections/warehouse'
 
 const COMPANY_FOOTER_COLUMNS = [
   {
     title: 'Product',
     links: [
-      { text: 'Console', href: '/sign-in' },
+      { text: 'Console', href: '/dashboard' },
       { text: 'Model Square', href: '/pricing' },
       { text: 'Docs', href: 'https://docs.newapi.pro' },
     ],
@@ -39,8 +38,8 @@ const COMPANY_FOOTER_COLUMNS = [
     title: 'Company',
     links: [
       { text: 'About', href: '/about' },
-      { text: 'Sign in', href: '/sign-in' },
-      { text: 'Sign up', href: '/sign-up' },
+      { text: 'Sign in', href: '/#hero-auth' },
+      { text: 'Sign up', href: '/#hero-auth' },
     ],
   },
 ]
@@ -55,9 +54,8 @@ export function CompanySite() {
       <PublicHeader />
       <main>
         <Hero />
-        <Pain />
         <CapabilityChain />
-        <AuditTrail />
+        <TokenToDeal />
         <Warehouse />
         <FdeSection />
       </main>

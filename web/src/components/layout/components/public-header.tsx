@@ -115,15 +115,7 @@ export function PublicHeader(props: PublicHeaderProps) {
     brandLogo = customLogo
   }
 
-  let desktopAuthAction: React.ReactNode = (
-    <Button
-      size='sm'
-      className='h-8 rounded-lg px-3.5 text-xs font-medium'
-      render={<Link to='/sign-in' />}
-    >
-      {t('Sign in')}
-    </Button>
-  )
+  let desktopAuthAction: React.ReactNode = null
   if (loading) {
     desktopAuthAction = <Skeleton className='h-8 w-20 rounded-lg' />
   } else if (isAuthenticated) {
@@ -213,9 +205,13 @@ export function PublicHeader(props: PublicHeaderProps) {
     }, 1000)
 
     const timeoutId = window.setTimeout(() => {
-      const redirect = authPromptTarget.href
       setAuthPromptTarget(null)
-      navigate({ to: '/sign-in', search: { redirect } })
+      const heroAuth = document.getElementById('hero-auth')
+      if (heroAuth) {
+        heroAuth.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        void navigate({ to: '/', hash: 'hero-auth' })
+      }
     }, AUTH_PROMPT_SECONDS * 1000)
 
     return () => {
@@ -230,10 +226,14 @@ export function PublicHeader(props: PublicHeaderProps) {
   }, [])
 
   const navigateToSignIn = useCallback(() => {
-    const redirect = authPromptTarget?.href || '/'
     setAuthPromptTarget(null)
-    navigate({ to: '/sign-in', search: { redirect } })
-  }, [authPromptTarget?.href, navigate])
+    const heroAuth = document.getElementById('hero-auth')
+    if (heroAuth) {
+      heroAuth.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+    void navigate({ to: '/', hash: 'hero-auth' })
+  }, [navigate])
 
   const handleNavLinkClick = useCallback(
     (
@@ -251,11 +251,12 @@ export function PublicHeader(props: PublicHeaderProps) {
         if (closeMobile) {
           setMobileOpen(false)
         }
-        setAuthPromptSecondsLeft(AUTH_PROMPT_SECONDS)
-        setAuthPromptTarget({
-          title: t(link.title),
-          href: link.href,
-        })
+        const heroAuth = document.getElementById('hero-auth')
+        if (heroAuth) {
+          heroAuth.scrollIntoView({ behavior: 'smooth' })
+          return
+        }
+        void navigate({ to: '/', hash: 'hero-auth' })
         return
       }
 
@@ -263,7 +264,7 @@ export function PublicHeader(props: PublicHeaderProps) {
         setMobileOpen(false)
       }
     },
-    [t]
+    [navigate]
   )
 
   return (
@@ -371,12 +372,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                 />
               )}
 
-              {showAuthButtons && (
+              {showAuthButtons && desktopAuthAction ? (
                 <>
                   <div className='bg-border/40 mx-1 h-4 w-px' />
                   {desktopAuthAction}
                 </>
-              )}
+              ) : null}
             </div>
 
             {/* Mobile: compact actions + hamburger */}
@@ -491,15 +492,17 @@ export function PublicHeader(props: PublicHeaderProps) {
             )}
             style={{ transitionDelay: mobileOpen ? '250ms' : '0ms' }}
           >
-            {showAuthButtons && (
-              <Link
-                to={isAuthenticated ? '/dashboard' : '/sign-in'}
-                onClick={() => setMobileOpen(false)}
+            {showAuthButtons && isAuthenticated ? (
+              <Button
+                onClick={() => {
+                  setMobileOpen(false)
+                  void navigate({ to: '/dashboard' })
+                }}
                 className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
               >
-                {isAuthenticated ? t('Go to Dashboard') : t('Sign in')}
-              </Link>
-            )}
+                {t('Go to Dashboard')}
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>

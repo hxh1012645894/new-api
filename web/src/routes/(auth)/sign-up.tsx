@@ -30,5 +30,11 @@ export const Route = createFileRoute('/(auth)/sign-up')({
     if (auth.user) {
       throw redirect({ to: '/dashboard' })
     }
+
+    throw redirect({
+      to: '/',
+      hash: 'hero-auth',
+      replace: true,
+    })
   },
 })

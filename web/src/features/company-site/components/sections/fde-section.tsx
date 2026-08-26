@@ -28,7 +28,7 @@ export function FdeSection() {
       <div className='mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 px-6 py-20 md:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20'>
         <div>
           <span className='text-muted-foreground text-[11px] font-bold tracking-[0.14em] uppercase'>
-            {t('05 / Work with iFAi')}
+            {t('04 / Work with iFAi')}
           </span>
           <h2 className='mt-3 text-3xl leading-[1.1] font-semibold tracking-[-0.03em] md:text-[40px]'>
             {t('Bring a real scenario. Land it with FDE.')}

@@ -18,25 +18,28 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
 
-import { WarehouseTowerDiagram } from '../diagrams/warehouse-tower-diagram'
+import { TokenToDealDiagram } from '../diagrams/token-to-deal-diagram'
 import { SectionHead } from '../section-head'
 
-export function Warehouse() {
+export function TokenToDeal() {
   const { t } = useTranslation()
 
   return (
-    <section id='warehouse' className='border-border/60 scroll-mt-20 border-t'>
+    <section
+      id='token-to-deal'
+      className='border-border/60 scroll-mt-20 border-t'
+    >
       <div className='mx-auto max-w-6xl px-6 py-16 md:py-24'>
         <SectionHead
-          eyebrow={t('03 / Enterprise Data Warehouse')}
-          title={t('Your company data, ready for AI decisions.')}
+          eyebrow={t('02 / Token Economy')}
+          title={t('Paving every token call toward the next closed deal.')}
           description={t(
-            'iFAi rapidly connects scattered business systems, builds an ODS/DWD/DWS/ADS warehouse, and gives AI a permission-aware retrieval and decision layer with traceable evidence.'
+            'Aggregate CRM, ERP and model query tokens into four real-time decision pipelines. Eliminate blind costs and turn every query into measurable business deals.'
           )}
         />
 
         <div className='mt-8'>
-          <WarehouseTowerDiagram />
+          <TokenToDealDiagram />
         </div>
       </div>
     </section>

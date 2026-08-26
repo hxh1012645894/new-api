@@ -20,67 +20,66 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, test } from 'vitest'
 
 import { CapabilityChain } from '../components/sections/capability-chain'
-import { Pain } from '../components/sections/pain'
+import { TokenToDeal } from '../components/sections/token-to-deal'
 import { Warehouse } from '../components/sections/warehouse'
 
 describe('company site sections', () => {
-  test('pain section shows the consolidated bill that cannot be explained per call', () => {
-    render(<Pain />)
-    expect(
-      screen.getByText(
-        'One consolidated bill cannot answer a single specific call.'
-      )
-    ).toBeInTheDocument()
-    expect(screen.getAllByText('Not explainable per call')).toHaveLength(3)
-  })
-
-  test('capability chain explains the three company businesses and their outcomes', () => {
+  test('capability chain renders the 3-tier business pyramid architecture diagram', () => {
     render(<CapabilityChain />)
     expect(
       screen.getByText('Three businesses, one path from tokens to outcomes.')
     ).toBeInTheDocument()
-    expect(screen.getByText('Token Supply')).toBeInTheDocument()
-    expect(screen.getByText('Enterprise Brain')).toBeInTheDocument()
-    expect(screen.getByText('EB')).toBeInTheDocument()
     expect(
-      screen.getByText('FDE — Forward Deployed Engineers')
+      screen.getByText('Three-tier Precision Stack Architecture')
     ).toBeInTheDocument()
-    expect(screen.getByText('Model routing')).toBeInTheDocument()
-    expect(screen.getByText('Workflow reinvention')).toBeInTheDocument()
-    expect(screen.getByText('AI-ready data warehouse')).toBeInTheDocument()
-    expect(screen.getByText('Evidence-backed decisions')).toBeInTheDocument()
     expect(
-      screen.getByText('Unified access to mainstream models')
+      screen.getAllByText('Token Supply & Cost Optimization')[0]
     ).toBeInTheDocument()
-    expect(screen.getByText('Claude')).toBeInTheDocument()
-    expect(screen.getByText('Seedance')).toBeInTheDocument()
-
-    const businessCards = [
-      screen.getByRole('heading', { name: 'Token Supply' }).closest('article'),
-      screen
-        .getByRole('heading', { name: 'Enterprise Brain' })
-        .closest('article'),
-      screen
-        .getByRole('heading', { name: 'FDE — Forward Deployed Engineers' })
-        .closest('article'),
-    ]
-    expect(businessCards.every(Boolean)).toBe(true)
-    expect(new Set(businessCards.map((card) => card?.parentElement)).size).toBe(
-      1
-    )
-    expect(businessCards[0]?.parentElement).toHaveClass('lg:grid-cols-3')
+    expect(screen.getAllByText('Enterprise Brain')[0]).toBeInTheDocument()
+    expect(
+      screen.getAllByText('FDE — Forward Deployed Engineers')[0]
+    ).toBeInTheDocument()
+    expect(screen.getAllByText('Base Tier')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Middle Tier')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Top Tier')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Unified Model Gateway')[0]).toBeInTheDocument()
+    expect(
+      screen.getAllByText('Business Logic Understanding')[0]
+    ).toBeInTheDocument()
+    expect(screen.getAllByText('On-site Deployment')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Module Breakdown')[0]).toBeInTheDocument()
+    expect(
+      screen.getAllByText('Value & Capability Flow')[0]
+    ).toBeInTheDocument()
   })
 
-  test('warehouse section maps the three pain points to a layered warehouse', () => {
-    render(<Warehouse />)
-    expect(screen.getByText('System silos')).toBeInTheDocument()
-    expect(screen.getByText('Broken links')).toBeInTheDocument()
-    expect(screen.getByText('Manual development')).toBeInTheDocument()
+  test('token to deal section renders streamlined decision pipeline', () => {
+    render(<TokenToDeal />)
+    expect(
+      screen.getByText('Paving every token call toward the next closed deal.')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Commercial Deal')).toBeInTheDocument()
+    expect(
+      screen.getByText('Closed Loop: Next Commercial Deal')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Flow Deviation Analysis')).toBeInTheDocument()
+    expect(screen.getByText('Cost Budget Alert')).toBeInTheDocument()
+    expect(screen.getByText('Milestone Progress')).toBeInTheDocument()
+    expect(screen.getByText('Competitor Impact')).toBeInTheDocument()
+  })
 
-    expect(screen.getByText('Layered warehouse')).toBeInTheDocument()
-    expect(screen.getByText('ODS')).toBeInTheDocument()
-    expect(screen.getByText('DWD')).toBeInTheDocument()
-    expect(screen.getByText('DWS')).toBeInTheDocument()
-    expect(screen.getByText('ADS')).toBeInTheDocument()
+  test('warehouse section renders clean four-tier architecture stack', () => {
+    render(<Warehouse />)
+    expect(
+      screen.getByText('Your company data, ready for AI decisions.')
+    ).toBeInTheDocument()
+    expect(screen.getAllByText('ODS')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('DWD')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('DWS')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('ADS')[0]).toBeInTheDocument()
+    expect(screen.getByText('Operational Data Store')).toBeInTheDocument()
+    expect(screen.getByText('Data Warehouse Detail')).toBeInTheDocument()
+    expect(screen.getByText('Data Warehouse Service')).toBeInTheDocument()
+    expect(screen.getByText('Application Data Service')).toBeInTheDocument()
   })
 })

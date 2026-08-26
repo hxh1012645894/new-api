@@ -18,7 +18,6 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -35,27 +34,13 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [isSigningOut, setIsSigningOut] = useState(false)
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true)
-    try {
-      const response = await logout()
-      if (!response.success) {
-        toast.error(response.message || t('Failed to sign out session'))
-        return
-      }
-
-      clearAuthenticatedClientState(queryClient)
-      toast.success(t('Signed out'))
-      void navigate({ to: '/sign-in', replace: true })
-    } catch (error: unknown) {
-      toast.error(
-        error instanceof Error ? error.message : t('Failed to sign out session')
-      )
-    } finally {
-      setIsSigningOut(false)
-    }
+  const handleSignOut = () => {
+    onOpenChange(false)
+    clearAuthenticatedClientState(queryClient)
+    toast.success(t('Signed out'))
+    void navigate({ to: '/', replace: true })
+    void logout()
   }
 
   return (
@@ -68,7 +53,6 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
       )}
       confirmText={t('Sign out')}
       handleConfirm={handleSignOut}
-      isLoading={isSigningOut}
       className='sm:max-w-sm'
     />
   )

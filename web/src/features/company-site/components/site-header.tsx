@@ -92,7 +92,7 @@ export function SiteHeader() {
   const displayName = systemName || 'iFAi'
   const links: HeaderLink[] = [
     { href: '#capabilities', label: t('Capabilities') },
-    { href: '#audit', label: t('Audit Trail') },
+    { href: '#token-to-deal', label: t('Token Economy') },
     { href: '#warehouse', label: t('Data Warehouse') },
     { href: '#fde', label: t('FDE') },
   ]
@@ -150,16 +150,7 @@ export function SiteHeader() {
             >
               {t('Go to Dashboard')}
             </Button>
-          ) : (
-            <Button
-              size='sm'
-              variant='ghost'
-              className='h-8 rounded-lg px-3 text-xs font-medium'
-              render={<Link to='/sign-in' />}
-            >
-              {t('Sign in')}
-            </Button>
-          )}
+          ) : null}
           <Button
             size='sm'
             className='h-8 rounded-lg px-3.5 text-xs font-medium'
@@ -212,15 +203,7 @@ export function SiteHeader() {
               >
                 {t('Go to Dashboard')}
               </Button>
-            ) : (
-              <Button
-                variant='outline'
-                className='h-10 rounded-lg text-sm font-medium'
-                render={<Link to='/sign-in' onClick={() => setOpen(false)} />}
-              >
-                {t('Sign in')}
-              </Button>
-            )}
+            ) : null}
             <Button
               className='h-10 rounded-lg text-sm font-medium'
               render={<a href='#fde' onClick={() => setOpen(false)} />}
