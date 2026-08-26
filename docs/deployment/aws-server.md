@@ -7,24 +7,24 @@
 | 项 | 值 |
 |---|---|
 | 云平台 | AWS EC2 |
-| 实例 | `i-085a5014598b634aa`(t2.micro,1 vCPU / 1GB / 8GB gp3) |
-| 系统 | Ubuntu 26.04 LTS |
-| 区域 | 新加坡 ap-southeast-1 |
-| 公网 IP | `52.77.133.61`(弹性 IP) |
+| 实例 | `i-0086d27f370e69528`(t3.large, 2 vCPU / 8GB / 20GB gp3, 已迁移至香港) |
+| 系统 | Ubuntu 24.04/26.04 LTS (x86_64) |
+| 区域 | 中国香港 ap-east-1 (香港机房) |
+| 公网 IP | `43.199.235.81`(香港弹性 IP) |
 | 域名 | **https://ifai.club/**(www 同指向) |
 | 密钥对 | `new-api-key-2`(私钥 `new-api-key-2.pem`,仓库根目录,已被 .gitignore 排除) |
 
 ## SSH 连接
 
 ```bash
-ssh -i new-api-key-2.pem ubuntu@52.77.133.61
+ssh -i new-api-key-2.pem ubuntu@43.199.235.81
 ```
 
 或配 `~/.ssh/config` 别名后 `ssh new-api`:
 
 ```
 Host new-api
-  HostName 52.77.133.61
+  HostName 43.199.235.81
   User ubuntu
   IdentityFile /path/to/new-api-key-2.pem
 ```
@@ -50,6 +50,7 @@ new-api ──▶ pgsql(postgres:16-alpine,数据持久化在 /data/pgsql)
 
 关键配置:
 - Nginx 配置:`/data/nginx/nginx.conf`(含 HTTP→HTTPS 跳转、proxy_buffering off 保流式)
+- 流式输出(SSE): Nginx 必须关闭缓冲(`proxy_buffering off; proxy_cache off; chunked_transfer_encoding on; proxy_http_version 1.1;`),API 请求使用 `"stream": true` 实现即时打字机输出,避免非流式等待模型全部生成(约 30s)
 - SSL 证书:`/data/nginx/certs/`(Let's Encrypt,自动续期)
 - 数据库连接:new-api 通过 `SQL_DSN` 环境变量连 `pgsql:5432`(密码在服务器容器环境变量中,不入仓库)
 
@@ -77,8 +78,8 @@ DNS 记录(Namecheap Advanced DNS):
 
 | 类型 | Host | 值 |
 |---|---|---|
-| A | @ | 52.77.133.61 |
-| A | www | 52.77.133.61 |
+| A | @ | 43.199.235.81 (香港新 IP) |
+| A | www | 43.199.235.81 (香港新 IP) |
 | TXT | @ | SPF(邮件,勿删) |
 
 ## 证书续期

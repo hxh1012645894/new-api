@@ -183,7 +183,7 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeCodex:          "ChatGPT Subscription (Codex)",
 	ChannelTypeAdvancedCustom: "Advanced Custom",
 	ChannelTypeSub2API:        "Sub2API",
-	ChannelTypeNewAPI:         "New API",
+	ChannelTypeNewAPI:         "iFAi",
 }
 
 func GetChannelTypeName(channelType int) string {

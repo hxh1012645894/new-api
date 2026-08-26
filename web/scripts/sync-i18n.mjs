@@ -54,6 +54,8 @@ const BRAND_AND_LITERAL_KEYS = new Set([
   'Gemini',
   'Gemini Image 4K',
   'GitHub',
+  'iFAi',
+  'iFAi &lt;noreply@example.com&gt;',
   'Jimeng',
   'JustSong',
   'LingYiWanWu',
