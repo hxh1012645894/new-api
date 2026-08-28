@@ -19,38 +19,43 @@ For commercial licensing, please contact support@quantumnous.com
 import { cn } from '@/lib/utils'
 
 interface SectionHeadProps {
-  eyebrow: string
+  number: '01' | '02' | '03'
+  label: string
   title: string
-  description?: string
+  description: string
+  tone: 'blue' | 'violet' | 'coral'
   className?: string
 }
 
-/**
- * Shared editorial section header: numbered eyebrow + display title on the
- * left, optional supporting paragraph on the right. Receives already
- * localized strings.
- */
+const TONE_CLASSES = {
+  blue: 'text-blue-600 dark:text-blue-300',
+  violet: 'text-violet-600 dark:text-violet-300',
+  coral: 'text-orange-600 dark:text-orange-300',
+}
+
 export function SectionHead(props: SectionHeadProps) {
   return (
-    <div
-      className={cn(
-        'mb-12 grid gap-6 lg:grid-cols-2 lg:gap-14 lg:mb-16',
-        props.className
-      )}
-    >
-      <div>
-        <span className='text-muted-foreground text-[11px] font-bold tracking-[0.14em] uppercase'>
-          {props.eyebrow}
+    <div className={cn('max-w-md', props.className)}>
+      <div className='flex items-center gap-3'>
+        <span
+          className={cn(
+            'font-mono text-xs font-semibold tracking-normal',
+            TONE_CLASSES[props.tone]
+          )}
+        >
+          {props.number}
         </span>
-        <h2 className='mt-3 text-3xl leading-[1.12] font-semibold tracking-[-0.03em] md:text-4xl'>
-          {props.title}
-        </h2>
+        <span className='text-muted-foreground text-xs font-semibold tracking-normal uppercase'>
+          {props.label}
+        </span>
+        <span className='bg-border h-px flex-1' aria-hidden='true' />
       </div>
-      {props.description ? (
-        <p className='text-muted-foreground max-w-[440px] self-end text-[15px] leading-relaxed lg:justify-self-end'>
-          {props.description}
-        </p>
-      ) : null}
+      <h2 className='mt-6 text-4xl leading-tight font-semibold tracking-normal text-balance md:text-5xl'>
+        {props.title}
+      </h2>
+      <p className='text-muted-foreground mt-5 text-base leading-relaxed text-pretty'>
+        {props.description}
+      </p>
     </div>
   )
 }

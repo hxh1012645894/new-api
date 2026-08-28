@@ -29,16 +29,16 @@ export function TokenToDeal() {
       id='token-to-deal'
       className='border-border/60 scroll-mt-20 border-t'
     >
-      <div className='mx-auto max-w-6xl px-6 py-16 md:py-24'>
+      <div className='mx-auto grid max-w-6xl items-center gap-10 px-6 py-18 md:py-28 lg:grid-cols-[1.28fr_0.72fr] lg:gap-16'>
         <SectionHead
-          eyebrow={t('02 / Token Economy')}
-          title={t('Paving every token call toward the next closed deal.')}
-          description={t(
-            'Aggregate CRM, ERP and model query tokens into four real-time decision pipelines. Eliminate blind costs and turn every query into measurable business deals.'
-          )}
+          number='02'
+          label={t('Token Economy')}
+          title={t('From tokens to deals.')}
+          description={t('See cost. Trace impact.')}
+          tone='violet'
+          className='lg:order-2'
         />
-
-        <div className='mt-8'>
+        <div className='lg:order-1'>
           <TokenToDealDiagram />
         </div>
       </div>

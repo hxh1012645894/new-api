@@ -50,12 +50,10 @@ export function Hero() {
           </div>
 
           <h1
-            className='landing-animate-fade-up mt-6 text-[clamp(2.4rem,5vw,4.6rem)] leading-[1.08] font-bold tracking-tight'
+            className='landing-animate-fade-up mt-6 text-4xl leading-tight font-bold tracking-normal md:text-5xl lg:text-6xl'
             style={{ animationDelay: '60ms' }}
           >
-            {t('Every Token')}
-            <br />
-            <em className='text-muted-foreground not-italic'>{t('Counts.')}</em>
+            {t('Every Token Counts.')}
           </h1>
 
           <p

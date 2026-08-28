@@ -24,62 +24,50 @@ import { TokenToDeal } from '../components/sections/token-to-deal'
 import { Warehouse } from '../components/sections/warehouse'
 
 describe('company site sections', () => {
-  test('capability chain renders the 3-tier business pyramid architecture diagram', () => {
+  test('capability section pairs concise copy with a three-layer visual', () => {
     render(<CapabilityChain />)
+
+    expect(screen.getByText('01')).toBeInTheDocument()
     expect(
-      screen.getByText('Three businesses, one path from tokens to outcomes.')
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Tokens. Intelligence. Outcomes.',
+      })
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Three-tier Precision Stack Architecture')
+      screen.getByText('Three layers. One business loop.')
     ).toBeInTheDocument()
     expect(
-      screen.getAllByText('Token Supply & Cost Optimization')[0]
+      screen.getByRole('img', { name: 'Tokens. Intelligence. Outcomes.' })
     ).toBeInTheDocument()
-    expect(screen.getAllByText('Enterprise Brain')[0]).toBeInTheDocument()
-    expect(
-      screen.getAllByText('FDE — Forward Deployed Engineers')[0]
-    ).toBeInTheDocument()
-    expect(screen.getAllByText('Base Tier')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('Middle Tier')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('Top Tier')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('Unified Model Gateway')[0]).toBeInTheDocument()
-    expect(
-      screen.getAllByText('Business Logic Understanding')[0]
-    ).toBeInTheDocument()
-    expect(screen.getAllByText('On-site Deployment')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('Module Breakdown')[0]).toBeInTheDocument()
-    expect(
-      screen.getAllByText('Value & Capability Flow')[0]
-    ).toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
-  test('token to deal section renders streamlined decision pipeline', () => {
+  test('token section pairs concise copy with a deal-flow visual', () => {
     render(<TokenToDeal />)
+
+    expect(screen.getByText('02')).toBeInTheDocument()
     expect(
-      screen.getByText('Paving every token call toward the next closed deal.')
+      screen.getByRole('heading', { level: 2, name: 'From tokens to deals.' })
     ).toBeInTheDocument()
-    expect(screen.getByText('Commercial Deal')).toBeInTheDocument()
+    expect(screen.getByText('See cost. Trace impact.')).toBeInTheDocument()
     expect(
-      screen.getByText('Closed Loop: Next Commercial Deal')
+      screen.getByRole('img', { name: 'From tokens to deals.' })
     ).toBeInTheDocument()
-    expect(screen.getByText('Flow Deviation Analysis')).toBeInTheDocument()
-    expect(screen.getByText('Cost Budget Alert')).toBeInTheDocument()
-    expect(screen.getByText('Milestone Progress')).toBeInTheDocument()
-    expect(screen.getByText('Competitor Impact')).toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
-  test('warehouse section renders clean four-tier architecture stack', () => {
+  test('warehouse section pairs concise copy with a four-tier visual', () => {
     render(<Warehouse />)
+
+    expect(screen.getByText('03')).toBeInTheDocument()
     expect(
-      screen.getByText('Your company data, ready for AI decisions.')
+      screen.getByRole('heading', { level: 2, name: 'Data, ready for AI.' })
     ).toBeInTheDocument()
-    expect(screen.getAllByText('ODS')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('DWD')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('DWS')[0]).toBeInTheDocument()
-    expect(screen.getAllByText('ADS')[0]).toBeInTheDocument()
-    expect(screen.getByText('Operational Data Store')).toBeInTheDocument()
-    expect(screen.getByText('Data Warehouse Detail')).toBeInTheDocument()
-    expect(screen.getByText('Data Warehouse Service')).toBeInTheDocument()
-    expect(screen.getByText('Application Data Service')).toBeInTheDocument()
+    expect(screen.getByText('ODS → DWD → DWS → ADS')).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'Data, ready for AI.' })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 })

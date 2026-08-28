@@ -16,26 +16,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useTranslation } from 'react-i18next'
+import { render, screen } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
-import { WarehouseTowerDiagram } from '../diagrams/warehouse-tower-diagram'
-import { SectionHead } from '../section-head'
+import { Hero } from '../components/sections/hero'
 
-export function Warehouse() {
-  const { t } = useTranslation()
+vi.mock('../components/hero-auth-card', () => ({
+  HeroAuthCard: () => <div data-testid='hero-auth-card' />,
+}))
 
-  return (
-    <section id='warehouse' className='border-border/60 scroll-mt-20 border-t'>
-      <div className='mx-auto grid max-w-6xl items-center gap-10 px-6 py-18 md:py-28 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16'>
-        <SectionHead
-          number='03'
-          label={t('Data Warehouse')}
-          title={t('Data, ready for AI.')}
-          description='ODS → DWD → DWS → ADS'
-          tone='coral'
-        />
-        <WarehouseTowerDiagram />
-      </div>
-    </section>
-  )
-}
+describe('company site hero', () => {
+  test('renders the complete English slogan as a single heading', () => {
+    render(<Hero />)
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Every Token Counts.' })
+    ).toBeInTheDocument()
+  })
+})

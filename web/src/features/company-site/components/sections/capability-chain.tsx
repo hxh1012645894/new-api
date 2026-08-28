@@ -29,18 +29,15 @@ export function CapabilityChain() {
       id='capabilities'
       className='border-border/60 scroll-mt-20 border-t'
     >
-      <div className='mx-auto max-w-6xl px-6 py-16 md:py-24'>
+      <div className='mx-auto grid max-w-6xl items-center gap-10 px-6 py-18 md:py-28 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16'>
         <SectionHead
-          eyebrow={t('01 / Three Core Businesses')}
-          title={t('Three businesses, one path from tokens to outcomes.')}
-          description={t(
-            'iFAi supplies governed tokens, builds the enterprise decision brain, and deploys engineers on the frontline to turn business problems into working AI.'
-          )}
+          number='01'
+          label={t('Business Stack')}
+          title={t('Tokens. Intelligence. Outcomes.')}
+          description={t('Three layers. One business loop.')}
+          tone='blue'
         />
-
-        <div className='mt-8'>
-          <BusinessPyramidDiagram />
-        </div>
+        <BusinessPyramidDiagram />
       </div>
     </section>
   )

@@ -16,546 +16,261 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import {
-  ArrowDown,
-  ArrowUp,
-  Boxes,
-  Cpu,
-  Layers,
-  Sparkles,
-  Users,
-  Workflow,
-} from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-
-interface ArchitectureModule {
-  id: string
-  name: string
-  sub: string
-}
-
-interface ArchitectureLayer {
-  id: 'L3' | 'L2' | 'L1'
-  code: string
-  levelTag: string
-  name: string
-  role: string
-  tagline: string
-  description: string
-  color: string
-  borderClass: string
-  bgClass: string
-  activeBorderClass: string
-  activeBgClass: string
-  glowClass: string
-  textClass: string
-  badgeClass: string
-  icon: typeof Cpu
-  widthClass: string
-  modules: ArchitectureModule[]
-  deps: { dir: 'up' | 'down'; text: string }[]
-  facts: string[]
-}
 
 export function BusinessPyramidDiagram() {
   const { t } = useTranslation()
-  const [selectedLayerId, setSelectedLayerId] = useState<
-    'L1' | 'L2' | 'L3' | 'ALL'
-  >('ALL')
-  const [activeLayerId, setActiveLayerId] = useState<'L1' | 'L2' | 'L3'>('L3')
-
-  const layers: ArchitectureLayer[] = [
-    {
-      id: 'L3',
-      code: '03',
-      levelTag: t('Top Tier'),
-      name: t('FDE — Forward Deployed Engineers'),
-      role: t('Customer Facing'),
-      tagline: t('Bring a business problem; leave with working AI'),
-      description: t(
-        'The last mile facing customers, turning enterprise brain capabilities into real commercial efficiency and business results.'
-      ),
-      color: '#f2cf4e',
-      borderClass: 'border-amber-500/30 dark:border-amber-500/30',
-      bgClass: 'bg-amber-500/[0.02] hover:bg-amber-500/[0.05]',
-      activeBorderClass:
-        'border-amber-500 ring-2 ring-amber-500/20 dark:ring-amber-500/30',
-      activeBgClass: 'bg-amber-500/[0.08]',
-      glowClass: 'bg-amber-500',
-      textClass: 'text-amber-600 dark:text-amber-400',
-      badgeClass:
-        'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
-      icon: Users,
-      widthClass: 'max-w-xl',
-      modules: [
-        {
-          id: 'm-deploy',
-          name: t('On-site Deployment'),
-          sub: t('Landing & integration in customer environments'),
-        },
-        {
-          id: 'm-diag',
-          name: t('Scenario Diagnosis'),
-          sub: t('Business bottleneck diagnosis & solution design'),
-        },
-        {
-          id: 'm-ops',
-          name: t('Delivery & Operations'),
-          sub: t('Production accompanying & continuous tuning'),
-        },
-        {
-          id: 'm-metrics',
-          name: t('Outcome Measurement'),
-          sub: t('Quantifying efficiency & business results'),
-        },
-      ],
-      deps: [
-        {
-          dir: 'down',
-          text: t(
-            'Calls L2 Enterprise Brain capabilities downward for delivery'
-          ),
-        },
-        {
-          dir: 'up',
-          text: t(
-            'Distills frontline experience upward to feed back into brain evolution'
-          ),
-        },
-      ],
-      facts: [
-        t('24-hour response'),
-        t('Full FDE lifecycle tracking'),
-        t('Dedicated appointment service'),
-      ],
-    },
-    {
-      id: 'L2',
-      code: '02',
-      levelTag: t('Middle Tier'),
-      name: t('Enterprise Brain'),
-      role: t('Intelligence Hub'),
-      tagline: t('Turn company data into AI decision infrastructure'),
-      description: t(
-        'Enterprise intelligence hub understanding business logic, orchestrating digital workers, and managing complex AI workflows.'
-      ),
-      color: '#a37bff',
-      borderClass: 'border-purple-500/30 dark:border-purple-500/30',
-      bgClass: 'bg-purple-500/[0.02] hover:bg-purple-500/[0.05]',
-      activeBorderClass:
-        'border-purple-500 ring-2 ring-purple-500/20 dark:ring-purple-500/30',
-      activeBgClass: 'bg-purple-500/[0.08]',
-      glowClass: 'bg-purple-500',
-      textClass: 'text-purple-600 dark:text-purple-400',
-      badgeClass:
-        'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30',
-      icon: Workflow,
-      widthClass: 'max-w-2xl',
-      modules: [
-        {
-          id: 'm-logic',
-          name: t('Business Logic Understanding'),
-          sub: t('Translates business rules into actionable intents'),
-        },
-        {
-          id: 'm-agents',
-          name: t('Digital Worker Dispatch'),
-          sub: t('Orchestrates multi-agent collaboration by scenario'),
-        },
-        {
-          id: 'm-workflow',
-          name: t('Workflow Management'),
-          sub: t('Builds and monitors complex AI workflows'),
-        },
-        {
-          id: 'm-knowledge',
-          name: t('Knowledge Hub'),
-          sub: t('Enterprise knowledge accumulation & retrieval'),
-        },
-      ],
-      deps: [
-        {
-          dir: 'down',
-          text: t(
-            'Relies on L1 compute base downward to dispatch models at optimal cost'
-          ),
-        },
-        {
-          dir: 'up',
-          text: t(
-            'Supports L3 frontline delivery upward with reusable capabilities'
-          ),
-        },
-      ],
-      facts: [
-        t('Business intent understanding'),
-        t('Digital workforce'),
-        t('Workflow orchestration'),
-        t('Enterprise data warehouse'),
-      ],
-    },
-    {
-      id: 'L1',
-      code: '01',
-      levelTag: t('Base Tier'),
-      name: t('Token Supply & Cost Optimization'),
-      role: t('Technical Foundation'),
-      tagline: t('Buy tokens with governed access and transparent billing'),
-      description: t(
-        'Build a solid technical foundation, meter compute costs precisely, and ensure every drop of fuel burns efficiently.'
-      ),
-      color: '#4d8dff',
-      borderClass: 'border-blue-500/30 dark:border-blue-500/30',
-      bgClass: 'bg-blue-500/[0.02] hover:bg-blue-500/[0.05]',
-      activeBorderClass:
-        'border-blue-500 ring-2 ring-blue-500/20 dark:ring-blue-500/30',
-      activeBgClass: 'bg-blue-500/[0.08]',
-      glowClass: 'bg-blue-500',
-      textClass: 'text-blue-600 dark:text-blue-400',
-      badgeClass:
-        'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30',
-      icon: Cpu,
-      widthClass: 'max-w-full',
-      modules: [
-        {
-          id: 'm-gateway',
-          name: t('Unified Model Gateway'),
-          sub: t('Multi-model unified access and routing'),
-        },
-        {
-          id: 'm-audit',
-          name: t('Token Audit Trail'),
-          sub: t('Every call traceable and reconcilable'),
-        },
-        {
-          id: 'm-cost',
-          name: t('Cost Actuarial'),
-          sub: t('Token-level billing and budget control'),
-        },
-        {
-          id: 'm-dispatch',
-          name: t('Dispatch Optimization'),
-          sub: t('Request tiering and compute orchestration'),
-        },
-      ],
-      deps: [
-        {
-          dir: 'up',
-          text: t(
-            'Supplies compute and model channels upward for L2 intelligent dispatch'
-          ),
-        },
-        {
-          dir: 'down',
-          text: t('Receives frontline usage and cost demands downward from L3'),
-        },
-      ],
-      facts: [
-        t('Calling user'),
-        t('API Key'),
-        t('Model'),
-        t('Tokens'),
-        t('Cost'),
-        t('Latency'),
-        t('IP Address'),
-      ],
-    },
-  ]
-
-  const activeLayer = layers.find((l) => l.id === activeLayerId) || layers[0]
-
-  const handleSelectLayer = (id: 'L1' | 'L2' | 'L3' | 'ALL') => {
-    setSelectedLayerId(id)
-    if (id !== 'ALL') {
-      setActiveLayerId(id)
-    }
-  }
+  const title = t('Tokens. Intelligence. Outcomes.')
 
   return (
-    <div className='border-border/60 bg-card/60 relative overflow-hidden rounded-2xl border p-5 shadow-xs backdrop-blur-md sm:p-7'>
-      {/* Top Controls Header */}
-      <div className='border-border/50 flex flex-wrap items-center justify-between gap-3 border-b pb-4'>
-        <div className='flex items-center gap-2'>
-          <span className='size-2 animate-pulse rounded-full bg-blue-500' />
-          <span className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
-            {t('Three-tier Precision Stack Architecture')}
-          </span>
-        </div>
-
-        {/* Filter Navigation Tabs */}
-        <div className='bg-muted/60 flex flex-wrap items-center gap-1.5 rounded-lg p-1'>
-          <Button
-            size='sm'
-            variant='ghost'
-            onClick={() => handleSelectLayer('ALL')}
-            className={cn(
-              'h-7 px-2.5 text-xs font-medium rounded-md transition-all',
-              selectedLayerId === 'ALL'
-                ? 'bg-background text-foreground shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
+    <figure className='relative overflow-hidden rounded-lg border border-white/10 bg-[#07101e] shadow-[0_24px_80px_rgba(10,32,75,0.22)]'>
+      <svg
+        role='img'
+        aria-label={title}
+        viewBox='0 0 760 500'
+        className='h-auto w-full'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <title>{title}</title>
+        <defs>
+          <linearGradient id='business-bg' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#0a1730' />
+            <stop offset='1' stopColor='#050a13' />
+          </linearGradient>
+          <linearGradient id='business-blue' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#60a5fa' stopOpacity='.5' />
+            <stop offset='1' stopColor='#2563eb' stopOpacity='.14' />
+          </linearGradient>
+          <linearGradient id='business-violet' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#c4b5fd' stopOpacity='.5' />
+            <stop offset='1' stopColor='#7c3aed' stopOpacity='.14' />
+          </linearGradient>
+          <linearGradient id='business-gold' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#fde68a' stopOpacity='.55' />
+            <stop offset='1' stopColor='#f59e0b' stopOpacity='.14' />
+          </linearGradient>
+          <pattern
+            id='business-grid'
+            width='32'
+            height='32'
+            patternUnits='userSpaceOnUse'
           >
-            {t('Overview')}
-          </Button>
-          {layers.map((layer) => {
-            const isSelected = selectedLayerId === layer.id
-            return (
-              <Button
-                key={layer.id}
-                size='sm'
-                variant='ghost'
-                onClick={() => handleSelectLayer(layer.id)}
-                className={cn(
-                  'h-7 px-2.5 text-xs font-medium rounded-md transition-all gap-1.5',
-                  isSelected
-                    ? 'bg-background text-foreground shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <span
-                  className={cn('size-1.5 rounded-full', layer.glowClass)}
-                />
-                <span>{layer.levelTag}</span>
-              </Button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Main Interactive Grid */}
-      <div className='mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-12'>
-        {/* Left Column: Visual 3D Pyramid Stack Structure (7 cols) */}
-        <div className='relative space-y-3.5 lg:col-span-7'>
-          {layers.map((layer, index) => {
-            const isHighlighted =
-              selectedLayerId === 'ALL' || selectedLayerId === layer.id
-            const isActive = activeLayerId === layer.id
-            const LayerIcon = layer.icon
-
-            return (
-              <div key={layer.id} className='relative'>
-                {/* Upward/Downward flow indicators between layers */}
-                {index > 0 && (
-                  <div className='text-muted-foreground/70 my-1.5 flex items-center justify-center gap-2 text-[10px]'>
-                    <ArrowUp className='size-3 text-purple-500/70' />
-                    <span>
-                      {index === 1
-                        ? t(
-                            'Upward capability delivery ↑ / Downward experience feedback ↓'
-                          )
-                        : t(
-                            'Upward compute supply ↑ / Downward demand routing ↓'
-                          )}
-                    </span>
-                    <ArrowDown className='size-3 text-amber-500/70' />
-                  </div>
-                )}
-
-                <div
-                  role='button'
-                  tabIndex={0}
-                  onClick={() => {
-                    setActiveLayerId(layer.id)
-                    setSelectedLayerId(layer.id)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      setActiveLayerId(layer.id)
-                      setSelectedLayerId(layer.id)
-                    }
-                  }}
-                  className={cn(
-                    'relative rounded-xl border p-4 sm:p-5 transition-all duration-300 mx-auto w-full cursor-pointer text-left',
-                    layer.widthClass,
-                    isHighlighted ? 'opacity-100' : 'opacity-35',
-                    isActive
-                      ? `${layer.activeBorderClass} ${layer.activeBgClass} shadow-md`
-                      : `${layer.borderClass} ${layer.bgClass}`
-                  )}
-                >
-                  {/* Layer Header */}
-                  <div className='flex items-center justify-between gap-3'>
-                    <div className='flex items-center gap-2.5'>
-                      <div
-                        className={cn(
-                          'size-7 rounded-lg flex items-center justify-center border',
-                          layer.badgeClass
-                        )}
-                      >
-                        <LayerIcon className='size-3.5' />
-                      </div>
-                      <div>
-                        <div className='flex items-center gap-2'>
-                          <h4 className='text-foreground text-sm font-bold sm:text-base'>
-                            {layer.name}
-                          </h4>
-                          <span
-                            className={cn(
-                              'text-xs font-semibold px-2 py-0.5 rounded-md border',
-                              layer.badgeClass
-                            )}
-                          >
-                            {layer.levelTag}
-                          </span>
-                        </div>
-                        <p
-                          className={cn(
-                            'text-xs font-medium mt-0.5',
-                            layer.textClass
-                          )}
-                        >
-                          {layer.tagline}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className='flex items-center gap-2'>
-                      <span className='text-muted-foreground/70 text-xs font-semibold'>
-                        {layer.role}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 4 Precision Module Nodes Grid */}
-                  <div className='border-border/40 mt-3.5 grid grid-cols-2 gap-2 border-t pt-3'>
-                    {layer.modules.map((mod) => (
-                      <div
-                        key={mod.id}
-                        className='border-border/50 bg-background/60 hover:bg-background flex items-start gap-2 rounded-lg border p-2 text-xs transition-colors'
-                      >
-                        <span
-                          className={cn(
-                            'size-1.5 rounded-full mt-1.5 shrink-0',
-                            layer.glowClass
-                          )}
-                        />
-                        <div className='min-w-0'>
-                          <div className='text-foreground truncate font-semibold'>
-                            {mod.name}
-                          </div>
-                          <div className='text-muted-foreground truncate text-[11px]'>
-                            {mod.sub}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Right Column: Layer Inspector & Detailed Diagnostics (5 cols) */}
-        <div className='lg:col-span-5'>
-          <div
-            className={cn(
-              'rounded-xl border p-5 sm:p-6 transition-all duration-300 space-y-4 sticky top-24',
-              activeLayer.activeBorderClass,
-              activeLayer.activeBgClass
-            )}
+            <path
+              d='M32 0H0V32'
+              fill='none'
+              stroke='#7dd3fc'
+              strokeOpacity='.08'
+            />
+          </pattern>
+          <filter
+            id='business-glow'
+            x='-80%'
+            y='-80%'
+            width='260%'
+            height='260%'
           >
-            {/* Inspector Top Status */}
-            <div className='border-border/50 flex items-center justify-between border-b pb-3'>
-              <div className='flex items-center gap-2'>
-                <span
-                  className={cn('size-2.5 rounded-full', activeLayer.glowClass)}
-                />
-                <span className='text-muted-foreground text-xs font-semibold'>
-                  {activeLayer.levelTag} · {activeLayer.role}
-                </span>
-              </div>
-              <Badge variant='outline' className='text-[10px]'>
-                {t('Current Layer Details')}
-              </Badge>
-            </div>
+            <feGaussianBlur stdDeviation='9' />
+          </filter>
+        </defs>
 
-            <div>
-              <h3 className='text-foreground text-lg font-bold tracking-tight'>
-                {activeLayer.name}
-              </h3>
-              <p className='text-muted-foreground mt-1.5 text-xs leading-relaxed'>
-                {activeLayer.description}
-              </p>
-            </div>
+        <rect width='760' height='500' fill='url(#business-bg)' />
+        <rect width='760' height='500' fill='url(#business-grid)' />
+        <circle cx='618' cy='96' r='54' fill='#fbbf24' fillOpacity='.08' />
+        <circle
+          cx='618'
+          cy='96'
+          r='22'
+          fill='#fbbf24'
+          fillOpacity='.32'
+          filter='url(#business-glow)'
+        />
 
-            {/* Modules List */}
-            <div className='space-y-2 pt-1'>
-              <div className='text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase'>
-                <Boxes className='text-primary size-3.5' />
-                <span>{t('Module Breakdown')}</span>
-              </div>
-              <div className='grid grid-cols-1 gap-2'>
-                {activeLayer.modules.map((mod) => (
-                  <div
-                    key={mod.id}
-                    className='border-border/60 bg-background/80 rounded-lg border p-2.5 text-xs'
-                  >
-                    <div className='text-foreground flex items-center gap-2 font-semibold'>
-                      <span
-                        className={cn(
-                          'size-1.5 rounded-full',
-                          activeLayer.glowClass
-                        )}
-                      />
-                      <span>{mod.name}</span>
-                    </div>
-                    <p className='text-muted-foreground mt-1 pl-3.5 text-[11px]'>
-                      {mod.sub}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+        <g fill='none' strokeLinecap='round'>
+          <path d='M398 383V212' stroke='#93c5fd' strokeOpacity='.28' />
+          <path d='M240 327V226' stroke='#93c5fd' strokeOpacity='.18' />
+          <path d='M556 324V218' stroke='#93c5fd' strokeOpacity='.18' />
+          <path
+            d='M466 192C520 170 558 139 599 108'
+            stroke='#fbbf24'
+            strokeOpacity='.6'
+            strokeWidth='2'
+          />
+        </g>
 
-            {/* Dependencies & Flow */}
-            <div className='border-border/40 space-y-2 border-t pt-3'>
-              <div className='text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase'>
-                <Layers className='text-primary size-3.5' />
-                <span>{t('Value & Capability Flow')}</span>
-              </div>
-              <div className='space-y-1.5'>
-                {activeLayer.deps.map((dep, idx) => (
-                  <div
-                    key={idx}
-                    className='text-muted-foreground flex items-start gap-2 text-xs leading-relaxed'
-                  >
-                    <span
-                      className={cn('font-bold mt-0.5', activeLayer.textClass)}
-                    >
-                      {dep.dir === 'up' ? '↑' : '↓'}
-                    </span>
-                    <span>{dep.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+        <g>
+          <polygon
+            points='98,345 370,244 670,348 398,456'
+            fill='url(#business-blue)'
+            stroke='#60a5fa'
+            strokeOpacity='.78'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='98,345 398,456 398,474 98,363'
+            fill='#1d4ed8'
+            fillOpacity='.22'
+            stroke='#60a5fa'
+            strokeOpacity='.3'
+          />
+          <polygon
+            points='398,456 670,348 670,366 398,474'
+            fill='#1e40af'
+            fillOpacity='.3'
+            stroke='#60a5fa'
+            strokeOpacity='.3'
+          />
+          <path
+            d='M174 349L371 276L592 352L397 430Z'
+            fill='none'
+            stroke='#93c5fd'
+            strokeOpacity='.18'
+          />
+          <circle cx='236' cy='343' r='7' fill='#93c5fd' fillOpacity='.82' />
+          <circle cx='369' cy='292' r='9' fill='#dbeafe' fillOpacity='.9' />
+          <circle cx='530' cy='349' r='7' fill='#93c5fd' fillOpacity='.82' />
+          <path
+            d='M236 343L369 292L530 349L397 402Z'
+            fill='none'
+            stroke='#bfdbfe'
+            strokeOpacity='.34'
+          />
+          <text
+            x='398'
+            y='444'
+            fill='#dbeafe'
+            fontSize='15'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            TOKEN
+          </text>
+        </g>
 
-            {/* Verifiable Facts */}
-            <div className='border-border/40 space-y-2 border-t pt-3'>
-              <div className='text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase'>
-                <Sparkles className='text-primary size-3.5' />
-                <span>{t('Verifiable Facts & Attributes')}</span>
-              </div>
-              <div className='flex flex-wrap gap-1.5'>
-                {activeLayer.facts.map((fact) => (
-                  <span
-                    key={fact}
-                    className='border-border/60 bg-background/90 text-muted-foreground rounded-md border px-2 py-0.5 text-[11px] font-medium'
-                  >
-                    {fact}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <g>
+          <polygon
+            points='176,269 374,195 598,272 400,352'
+            fill='url(#business-violet)'
+            stroke='#a78bfa'
+            strokeOpacity='.82'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='176,269 400,352 400,367 176,285'
+            fill='#7c3aed'
+            fillOpacity='.2'
+            stroke='#a78bfa'
+            strokeOpacity='.3'
+          />
+          <polygon
+            points='400,352 598,272 598,287 400,367'
+            fill='#6d28d9'
+            fillOpacity='.28'
+            stroke='#a78bfa'
+            strokeOpacity='.3'
+          />
+          <circle cx='400' cy='264' r='26' fill='#a78bfa' fillOpacity='.12' />
+          <circle cx='400' cy='264' r='9' fill='#ddd6fe' />
+          <path
+            d='M400 264L284 286M400 264L504 295M400 264V321'
+            stroke='#c4b5fd'
+            strokeOpacity='.55'
+          />
+          <circle cx='284' cy='286' r='6' fill='#c4b5fd' />
+          <circle cx='504' cy='295' r='6' fill='#c4b5fd' />
+          <circle cx='400' cy='321' r='6' fill='#c4b5fd' />
+          <text
+            x='400'
+            y='344'
+            fill='#ede9fe'
+            fontSize='15'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            BRAIN
+          </text>
+        </g>
+
+        <g>
+          <polygon
+            points='258,185 382,139 528,190 404,241'
+            fill='url(#business-gold)'
+            stroke='#fbbf24'
+            strokeOpacity='.9'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='258,185 404,241 404,253 258,198'
+            fill='#d97706'
+            fillOpacity='.22'
+            stroke='#fbbf24'
+            strokeOpacity='.32'
+          />
+          <polygon
+            points='404,241 528,190 528,202 404,253'
+            fill='#b45309'
+            fillOpacity='.28'
+            stroke='#fbbf24'
+            strokeOpacity='.32'
+          />
+          <rect
+            x='381'
+            y='163'
+            width='46'
+            height='46'
+            rx='8'
+            fill='#fbbf24'
+            fillOpacity='.14'
+            stroke='#fde68a'
+            strokeOpacity='.72'
+          />
+          <path
+            d='M393 195L402 185L410 191L419 178'
+            fill='none'
+            stroke='#fef3c7'
+            strokeWidth='3'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+          <text
+            x='404'
+            y='232'
+            fill='#fef3c7'
+            fontSize='14'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            FDE
+          </text>
+        </g>
+
+        <circle
+          cx='618'
+          cy='96'
+          r='34'
+          fill='none'
+          stroke='#fbbf24'
+          strokeOpacity='.56'
+          strokeWidth='2'
+        />
+        <circle
+          cx='618'
+          cy='96'
+          r='24'
+          fill='#f97316'
+          fillOpacity='.18'
+          stroke='#fdba74'
+          strokeOpacity='.58'
+        />
+        <path
+          d='M606 105L614 96L621 101L632 85'
+          fill='none'
+          stroke='#fff7ed'
+          strokeWidth='3'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+      </svg>
+      <figcaption className='sr-only'>{title}</figcaption>
+    </figure>
   )
 }

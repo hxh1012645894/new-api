@@ -16,329 +16,374 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import {
-  ArrowUp,
-  CheckCircle2,
-  Database,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-
-interface WarehouseTier {
-  code: 'ADS' | 'DWS' | 'DWD' | 'ODS'
-  name: string
-  shortLabel: string
-  tag: string
-  desc: string
-  aiValue: string
-  features: string[]
-  borderClass: string
-  bgClass: string
-  activeBorderClass: string
-  activeBgClass: string
-  badgeClass: string
-  dotClass: string
-  textClass: string
-}
 
 export function WarehouseTowerDiagram() {
   const { t } = useTranslation()
-  const [selectedTier, setSelectedTier] = useState<
-    'ALL' | 'ADS' | 'DWS' | 'DWD' | 'ODS'
-  >('ALL')
-  const [hoveredTier, setHoveredTier] = useState<string | null>(null)
-
-  const tiers: WarehouseTier[] = [
-    {
-      code: 'ADS',
-      name: t('Application Data Service'),
-      shortLabel: t('ADS Layer'),
-      tag: t('BI Dashboards · Decision Support · Alerts'),
-      desc: t(
-        'Serving direct decision scenarios: flow deviations >15% trigger alerts, budget >90% warnings delivered straight to executives.'
-      ),
-      aiValue: t('AI Decision & Alert Direct Delivery'),
-      features: [
-        t('Decision Dashboards'),
-        t('Anomaly Alerts'),
-        t('Budget Control'),
-        t('Executive Overview'),
-      ],
-      borderClass: 'border-orange-500/30 dark:border-orange-500/30',
-      bgClass: 'bg-orange-500/[0.02] hover:bg-orange-500/[0.05]',
-      activeBorderClass:
-        'border-orange-500 ring-2 ring-orange-500/20 dark:ring-orange-500/30',
-      activeBgClass: 'bg-orange-500/[0.08]',
-      badgeClass:
-        'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30',
-      dotClass: 'bg-orange-500',
-      textClass: 'text-orange-600 dark:text-orange-400',
-    },
-    {
-      code: 'DWS',
-      name: t('Data Warehouse Service'),
-      shortLabel: t('DWS Layer'),
-      tag: t('Wide Tables · Metric Pre-aggregation'),
-      desc: t(
-        'Domain-level wide tables and metric pre-aggregations ready for AI direct query without rescanning raw rows.'
-      ),
-      aiValue: t('Millisecond Metric Pre-aggregation'),
-      features: [
-        t('Wide Topic Tables'),
-        t('Metric Aggregation'),
-        t('Sub-second Response'),
-        t('AI Query Acceleration'),
-      ],
-      borderClass: 'border-teal-500/30 dark:border-teal-500/30',
-      bgClass: 'bg-teal-500/[0.02] hover:bg-teal-500/[0.05]',
-      activeBorderClass:
-        'border-teal-500 ring-2 ring-teal-500/20 dark:ring-teal-500/30',
-      activeBgClass: 'bg-teal-500/[0.08]',
-      badgeClass:
-        'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/30',
-      dotClass: 'bg-teal-500',
-      textClass: 'text-teal-600 dark:text-teal-400',
-    },
-    {
-      code: 'DWD',
-      name: t('Data Warehouse Detail'),
-      shortLabel: t('DWD Layer'),
-      tag: t('8 Business Domains · Dimension Unified'),
-      desc: t(
-        'Partitioned by business entity rather than system: unifying customer dimensions, product codes and org hierarchies across CRM and ERP.'
-      ),
-      aiValue: t('Unified Cross-system Entity Dimensions'),
-      features: [
-        t('Entity Modeling'),
-        t('Primary Key Unification'),
-        t('Multi-source Alignment'),
-        t('Standard Dimensions'),
-      ],
-      borderClass: 'border-purple-500/30 dark:border-purple-500/30',
-      bgClass: 'bg-purple-500/[0.02] hover:bg-purple-500/[0.05]',
-      activeBorderClass:
-        'border-purple-500 ring-2 ring-purple-500/20 dark:ring-purple-500/30',
-      activeBgClass: 'bg-purple-500/[0.08]',
-      badgeClass:
-        'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30',
-      dotClass: 'bg-purple-500',
-      textClass: 'text-purple-600 dark:text-purple-400',
-    },
-    {
-      code: 'ODS',
-      name: t('Operational Data Store'),
-      shortLabel: t('ODS Layer'),
-      tag: t('Raw Ingestion · Exact Landing'),
-      desc: t(
-        'CRM, ERP, DDI, MES and business systems are ingested into raw storage with fidelity preserved.'
-      ),
-      aiValue: t('High-fidelity Raw Ingestion'),
-      features: [
-        t('Real-time Ingestion'),
-        t('Fidelity Preservation'),
-        t('Source Table Mirroring'),
-        t('Full Audit Trail'),
-      ],
-      borderClass: 'border-blue-500/30 dark:border-blue-500/30',
-      bgClass: 'bg-blue-500/[0.02] hover:bg-blue-500/[0.05]',
-      activeBorderClass:
-        'border-blue-500 ring-2 ring-blue-500/20 dark:ring-blue-500/30',
-      activeBgClass: 'bg-blue-500/[0.08]',
-      badgeClass:
-        'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30',
-      dotClass: 'bg-blue-500',
-      textClass: 'text-blue-600 dark:text-blue-400',
-    },
-  ]
-
-  const activeCode =
-    hoveredTier || (selectedTier !== 'ALL' ? selectedTier : null)
+  const title = t('Data, ready for AI.')
 
   return (
-    <div className='border-border/70 bg-card space-y-6 rounded-2xl border p-5 shadow-xs sm:p-7'>
-      {/* Top Header & Filter Guidance Tabs */}
-      <div className='border-border/50 flex flex-wrap items-center justify-between gap-3 border-b pb-4'>
-        <div className='flex items-center gap-2'>
-          <Database className='text-primary size-4' />
-          <span className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
-            {t('Data Warehouse Four-tier Precision Stack')}
-          </span>
-        </div>
-
-        {/* Quick Tier Focus Tabs */}
-        <div className='bg-muted/60 flex flex-wrap items-center gap-1 rounded-lg p-1'>
-          <Button
-            size='sm'
-            variant='ghost'
-            onClick={() => setSelectedTier('ALL')}
-            className={cn(
-              'h-7 px-2.5 text-xs font-medium rounded-md transition-all',
-              selectedTier === 'ALL'
-                ? 'bg-background text-foreground shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
+    <figure className='relative overflow-hidden rounded-lg border border-white/10 bg-[#07101e] shadow-[0_24px_80px_rgba(78,43,28,0.2)]'>
+      <svg
+        role='img'
+        aria-label={title}
+        viewBox='0 0 760 520'
+        className='h-auto w-full'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <title>{title}</title>
+        <defs>
+          <linearGradient id='warehouse-bg' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#07101e' />
+            <stop offset='.56' stopColor='#0c1324' />
+            <stop offset='1' stopColor='#170f17' />
+          </linearGradient>
+          <linearGradient id='warehouse-blue' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#7dd3fc' stopOpacity='.55' />
+            <stop offset='1' stopColor='#2563eb' stopOpacity='.15' />
+          </linearGradient>
+          <linearGradient id='warehouse-violet' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#c4b5fd' stopOpacity='.5' />
+            <stop offset='1' stopColor='#7c3aed' stopOpacity='.14' />
+          </linearGradient>
+          <linearGradient id='warehouse-teal' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#99f6e4' stopOpacity='.5' />
+            <stop offset='1' stopColor='#0f766e' stopOpacity='.14' />
+          </linearGradient>
+          <linearGradient id='warehouse-coral' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#fdba74' stopOpacity='.52' />
+            <stop offset='1' stopColor='#ea580c' stopOpacity='.14' />
+          </linearGradient>
+          <pattern
+            id='warehouse-grid'
+            width='34'
+            height='34'
+            patternUnits='userSpaceOnUse'
           >
-            {t('All Tiers')}
-          </Button>
-          {tiers.map((tItem) => {
-            const isSelected = selectedTier === tItem.code
-            return (
-              <Button
-                key={tItem.code}
-                size='sm'
-                variant='ghost'
-                onClick={() => setSelectedTier(isSelected ? 'ALL' : tItem.code)}
-                className={cn(
-                  'h-7 px-2.5 text-xs font-medium rounded-md transition-all gap-1.5',
-                  isSelected
-                    ? 'bg-background text-foreground shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <span className={cn('size-1.5 rounded-full', tItem.dotClass)} />
-                <span>{tItem.code}</span>
-              </Button>
-            )
-          })}
-        </div>
-      </div>
+            <path
+              d='M34 0H0V34'
+              fill='none'
+              stroke='#7dd3fc'
+              strokeOpacity='.07'
+            />
+          </pattern>
+          <filter
+            id='warehouse-glow'
+            x='-100%'
+            y='-100%'
+            width='300%'
+            height='300%'
+          >
+            <feGaussianBlur stdDeviation='11' />
+          </filter>
+        </defs>
 
-      {/* 4 Interactive Tier Cards Stack */}
-      <div className='space-y-3.5'>
-        {tiers.map((tItem, index) => {
-          const isFocused = activeCode === tItem.code
-          const isDimmed = activeCode !== null && !isFocused
+        <rect width='760' height='520' fill='url(#warehouse-bg)' />
+        <rect width='760' height='520' fill='url(#warehouse-grid)' />
+        <ellipse
+          cx='418'
+          cy='454'
+          rx='250'
+          ry='34'
+          fill='#38bdf8'
+          fillOpacity='.08'
+        />
 
-          return (
-            <div key={tItem.code} className='relative'>
-              {/* Upward flow indicator between tiers */}
-              {index > 0 && (
-                <div className='text-muted-foreground/60 my-1 flex items-center justify-center gap-1.5 text-[10px]'>
-                  <ArrowUp
-                    className={cn(
-                      'size-3 transition-colors',
-                      isFocused ? tItem.textClass : 'text-muted-foreground/40'
-                    )}
-                  />
-                  <span className='font-mono text-[10px]'>
-                    {index === 1 && 'DWS → ADS (BI & Alerts)'}
-                    {index === 2 && 'DWD → DWS (Topic Aggregation)'}
-                    {index === 3 && 'ODS → DWD (Entity Modeling)'}
-                  </span>
-                </div>
-              )}
+        <g fill='none' strokeLinecap='round'>
+          <path d='M405 408V100' stroke='#e0f2fe' strokeOpacity='.18' />
+          <path d='M258 407V169' stroke='#e0f2fe' strokeOpacity='.1' />
+          <path d='M555 407V169' stroke='#e0f2fe' strokeOpacity='.1' />
+          <path
+            d='M404 102V64'
+            stroke='#fb8a6a'
+            strokeOpacity='.65'
+            strokeWidth='2'
+          />
+        </g>
 
-              <div
-                role='button'
-                tabIndex={0}
-                onMouseEnter={() => setHoveredTier(tItem.code)}
-                onMouseLeave={() => setHoveredTier(null)}
-                onClick={() =>
-                  setSelectedTier((curr) =>
-                    curr === tItem.code ? 'ALL' : tItem.code
-                  )
-                }
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setSelectedTier((curr) =>
-                      curr === tItem.code ? 'ALL' : tItem.code
-                    )
-                  }
-                }}
-                className={cn(
-                  'rounded-xl border p-4 sm:p-5 transition-all duration-200 cursor-pointer text-left',
-                  isDimmed
-                    ? 'opacity-40 scale-[0.99]'
-                    : 'opacity-100 scale-100',
-                  isFocused
-                    ? `${tItem.activeBorderClass} ${tItem.activeBgClass} shadow-md`
-                    : `${tItem.borderClass} ${tItem.bgClass}`
-                )}
-              >
-                {/* Tier Top Line */}
-                <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <div className='flex items-center gap-2.5'>
-                    <span
-                      className={cn('size-2 rounded-full', tItem.dotClass)}
-                    />
-                    <span
-                      className={cn(
-                        'font-mono text-xs font-bold rounded-md px-2 py-0.5 border transition-colors',
-                        tItem.badgeClass
-                      )}
-                    >
-                      {tItem.code}
-                    </span>
-                    <h4 className='text-foreground text-sm font-semibold'>
-                      {tItem.name}
-                    </h4>
-                  </div>
-                  <span className='text-muted-foreground font-mono text-xs'>
-                    {tItem.tag}
-                  </span>
-                </div>
+        <g>
+          <polygon
+            points='108,369 390,268 675,369 393,476'
+            fill='url(#warehouse-blue)'
+            stroke='#60a5fa'
+            strokeOpacity='.85'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='108,369 393,476 393,492 108,386'
+            fill='#1d4ed8'
+            fillOpacity='.2'
+            stroke='#60a5fa'
+            strokeOpacity='.3'
+          />
+          <polygon
+            points='393,476 675,369 675,386 393,492'
+            fill='#1e40af'
+            fillOpacity='.27'
+            stroke='#60a5fa'
+            strokeOpacity='.3'
+          />
+          <path
+            d='M176 374L390 298L608 374L393 456Z'
+            fill='none'
+            stroke='#bfdbfe'
+            strokeOpacity='.2'
+          />
+          <rect
+            x='229'
+            y='366'
+            width='38'
+            height='24'
+            rx='4'
+            fill='#60a5fa'
+            fillOpacity='.14'
+            stroke='#93c5fd'
+            strokeOpacity='.6'
+          />
+          <rect
+            x='352'
+            y='320'
+            width='70'
+            height='44'
+            rx='6'
+            fill='#60a5fa'
+            fillOpacity='.13'
+            stroke='#bfdbfe'
+            strokeOpacity='.7'
+          />
+          <rect
+            x='526'
+            y='368'
+            width='38'
+            height='24'
+            rx='4'
+            fill='#60a5fa'
+            fillOpacity='.14'
+            stroke='#93c5fd'
+            strokeOpacity='.6'
+          />
+          <path
+            d='M267 378L352 343M422 343L526 379'
+            stroke='#93c5fd'
+            strokeOpacity='.45'
+          />
+          <text
+            x='393'
+            y='466'
+            fill='#dbeafe'
+            fontSize='14'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            ODS
+          </text>
+        </g>
 
-                {/* Description */}
-                <p className='text-muted-foreground mt-2 text-xs leading-relaxed'>
-                  {tItem.desc}
-                </p>
+        <g>
+          <polygon
+            points='165,303 393,221 624,303 396,390'
+            fill='url(#warehouse-violet)'
+            stroke='#a78bfa'
+            strokeOpacity='.84'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='165,303 396,390 396,404 165,318'
+            fill='#7c3aed'
+            fillOpacity='.2'
+            stroke='#a78bfa'
+            strokeOpacity='.3'
+          />
+          <polygon
+            points='396,390 624,303 624,318 396,404'
+            fill='#6d28d9'
+            fillOpacity='.27'
+            stroke='#a78bfa'
+            strokeOpacity='.3'
+          />
+          <circle
+            cx='393'
+            cy='292'
+            r='22'
+            fill='#a78bfa'
+            fillOpacity='.12'
+            stroke='#c4b5fd'
+            strokeOpacity='.42'
+          />
+          <path
+            d='M393 270V314M371 292H415'
+            stroke='#ddd6fe'
+            strokeOpacity='.66'
+          />
+          <text
+            x='396'
+            y='381'
+            fill='#ede9fe'
+            fontSize='14'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            DWD
+          </text>
+        </g>
 
-                {/* Interactive Highlight Guidance Drawer (Expanded / Highlighted State) */}
-                <div
-                  className={cn(
-                    'mt-3 pt-3 border-t border-border/40 grid gap-2 sm:grid-cols-2 items-center text-xs transition-all',
-                    isFocused ? 'opacity-100' : 'opacity-70'
-                  )}
-                >
-                  <div className='flex items-center gap-1.5 font-medium'>
-                    <Sparkles
-                      className={cn('size-3.5 shrink-0', tItem.textClass)}
-                    />
-                    <span className='text-muted-foreground text-[11px]'>
-                      {t('Core AI Value')}:
-                    </span>
-                    <span
-                      className={cn('font-semibold text-xs', tItem.textClass)}
-                    >
-                      {tItem.aiValue}
-                    </span>
-                  </div>
+        <g>
+          <polygon
+            points='220,239 397,176 574,239 397,307'
+            fill='url(#warehouse-teal)'
+            stroke='#5eead4'
+            strokeOpacity='.82'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='220,239 397,307 397,320 220,252'
+            fill='#0f766e'
+            fillOpacity='.2'
+            stroke='#5eead4'
+            strokeOpacity='.3'
+          />
+          <polygon
+            points='397,307 574,239 574,252 397,320'
+            fill='#115e59'
+            fillOpacity='.27'
+            stroke='#5eead4'
+            strokeOpacity='.3'
+          />
+          <path
+            d='M298 247L397 211L498 247L397 285Z'
+            fill='none'
+            stroke='#99f6e4'
+            strokeOpacity='.34'
+          />
+          <circle cx='397' cy='248' r='8' fill='#ccfbf1' />
+          <circle cx='333' cy='247' r='5' fill='#99f6e4' />
+          <circle cx='462' cy='247' r='5' fill='#99f6e4' />
+          <text
+            x='397'
+            y='299'
+            fill='#ccfbf1'
+            fontSize='14'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            DWS
+          </text>
+        </g>
 
-                  <div className='flex flex-wrap items-center gap-1.5 sm:justify-end'>
-                    {tItem.features.map((feat) => (
-                      <span
-                        key={feat}
-                        className='bg-background/80 text-muted-foreground border-border/50 inline-flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] font-medium'
-                      >
-                        <CheckCircle2 className='size-2.5 text-teal-500' />
-                        <span>{feat}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+        <g>
+          <polygon
+            points='274,177 402,131 531,177 403,226'
+            fill='url(#warehouse-coral)'
+            stroke='#fb8a6a'
+            strokeOpacity='.9'
+            strokeWidth='1.5'
+          />
+          <polygon
+            points='274,177 403,226 403,238 274,190'
+            fill='#ea580c'
+            fillOpacity='.2'
+            stroke='#fb8a6a'
+            strokeOpacity='.32'
+          />
+          <polygon
+            points='403,226 531,177 531,190 403,238'
+            fill='#c2410c'
+            fillOpacity='.28'
+            stroke='#fb8a6a'
+            strokeOpacity='.32'
+          />
+          <rect
+            x='381'
+            y='151'
+            width='45'
+            height='39'
+            rx='7'
+            fill='#fb8a6a'
+            fillOpacity='.12'
+            stroke='#fed7aa'
+            strokeOpacity='.62'
+          />
+          <path
+            d='M390 181L399 171L407 177L417 163'
+            fill='none'
+            stroke='#fff7ed'
+            strokeWidth='3'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+          <text
+            x='403'
+            y='218'
+            fill='#ffedd5'
+            fontSize='14'
+            fontWeight='700'
+            textAnchor='middle'
+          >
+            ADS
+          </text>
+        </g>
 
-      {/* Clean Security Baseline Footer */}
-      <div className='border-border/60 text-muted-foreground flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs'>
-        <div className='flex items-center gap-2 font-medium text-teal-600 dark:text-teal-400'>
-          <ShieldCheck className='size-4' />
-          <span>{t('Security crosses every layer')}</span>
-        </div>
-        <div className='text-muted-foreground/80 text-[11px]'>
-          {t(
-            'Table grants · Column masking · Row-level RLS · AD identity · Audit trail'
-          )}
-        </div>
-      </div>
-    </div>
+        <circle
+          cx='404'
+          cy='64'
+          r='42'
+          fill='#fb8a6a'
+          fillOpacity='.16'
+          filter='url(#warehouse-glow)'
+        />
+        <circle
+          cx='404'
+          cy='64'
+          r='29'
+          fill='#160f18'
+          stroke='#fb8a6a'
+          strokeOpacity='.68'
+          strokeWidth='2'
+        />
+        <path
+          d='M390 73L399 63L407 69L420 52'
+          fill='none'
+          stroke='#5eead4'
+          strokeWidth='3'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+
+        <g fontSize='10' fontWeight='700' textAnchor='middle'>
+          <rect
+            x='52'
+            y='396'
+            width='58'
+            height='28'
+            rx='14'
+            fill='#0b1728'
+            stroke='#60a5fa'
+            strokeOpacity='.36'
+          />
+          <text x='81' y='414' fill='#93c5fd'>
+            CRM
+          </text>
+          <rect
+            x='52'
+            y='432'
+            width='58'
+            height='28'
+            rx='14'
+            fill='#0b1728'
+            stroke='#60a5fa'
+            strokeOpacity='.36'
+          />
+          <text x='81' y='450' fill='#93c5fd'>
+            ERP
+          </text>
+          <path
+            d='M110 410L164 386M110 446L164 414'
+            stroke='#60a5fa'
+            strokeOpacity='.34'
+          />
+        </g>
+      </svg>
+      <figcaption className='sr-only'>{title}</figcaption>
+    </figure>
   )
 }

@@ -16,153 +16,225 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import {
-  ArrowRight,
-  Cpu,
-  Database,
-  Flame,
-  Layers,
-  LineChart,
-  ShieldAlert,
-} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-
-import { Badge } from '@/components/ui/badge'
 
 export function TokenToDealDiagram() {
   const { t } = useTranslation()
-
-  const pipelines = [
-    {
-      title: t('Flow Deviation Analysis'),
-      desc: t('Deviation >15% trigger'),
-      icon: LineChart,
-      color:
-        'text-teal-600 dark:text-teal-400 bg-teal-500/10 border-teal-500/30',
-    },
-    {
-      title: t('Cost Budget Alert'),
-      desc: t('Over 90% budget warning'),
-      icon: ShieldAlert,
-      color:
-        'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30',
-    },
-    {
-      title: t('Milestone Progress'),
-      desc: t('Key stage achievement rate'),
-      icon: Layers,
-      color:
-        'text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/30',
-    },
-    {
-      title: t('Competitor Impact'),
-      desc: t('Market share drop alert'),
-      icon: Flame,
-      color:
-        'text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/30',
-    },
-  ]
+  const title = t('From tokens to deals.')
 
   return (
-    <div className='border-border/70 bg-card rounded-2xl border p-6 shadow-xs sm:p-8'>
-      {/* 3-Step Horizontal Process */}
-      <div className='grid items-center gap-4 lg:grid-cols-[1fr_auto_1.6fr_auto_1fr]'>
-        {/* Step 1: Token Sources */}
-        <div className='border-border/60 bg-muted/30 space-y-3 rounded-xl border p-5'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <Database className='size-4 text-blue-500' />
-              <span className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
-                {t('Token Sources')}
-              </span>
-            </div>
-            <Badge variant='outline' className='text-[10px]'>
-              01
-            </Badge>
-          </div>
-          <div className='text-muted-foreground space-y-1.5 text-xs'>
-            <div className='bg-card/80 border-border/50 flex items-center justify-between rounded-lg border px-2.5 py-1.5'>
-              <span>DDI · CRM · ERP</span>
-              <span className='text-[10px] font-medium text-blue-500'>
-                {t('Query')}
-              </span>
-            </div>
-            <div className='bg-card/80 border-border/50 flex items-center justify-between rounded-lg border px-2.5 py-1.5'>
-              <span>LLM · Agent Chains</span>
-              <span className='text-[10px] font-medium text-purple-500'>
-                {t('Reasoning')}
-              </span>
-            </div>
-            <div className='bg-card/80 border-border/50 flex items-center justify-between rounded-lg border px-2.5 py-1.5'>
-              <span>Rule Engine · Thresholds</span>
-              <span className='text-[10px] font-medium text-teal-500'>
-                {t('Verification')}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <ArrowRight className='text-muted-foreground/40 hidden size-4 shrink-0 lg:block' />
-
-        {/* Step 2: 4 Decision Pipelines */}
-        <div className='border-border/60 bg-muted/30 space-y-3 rounded-xl border p-5'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <Cpu className='size-4 text-teal-500' />
-              <span className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
-                {t('Decision Pipelines')}
-              </span>
-            </div>
-            <Badge variant='outline' className='text-[10px]'>
-              02
-            </Badge>
-          </div>
-          <div className='grid gap-2 sm:grid-cols-2'>
-            {pipelines.map((p) => {
-              const Icon = p.icon
-              return (
-                <div
-                  key={p.title}
-                  className={`rounded-lg border p-2.5 transition-all ${p.color}`}
-                >
-                  <div className='flex items-center gap-2'>
-                    <Icon className='size-3.5 shrink-0' />
-                    <span className='truncate text-xs font-semibold'>
-                      {p.title}
-                    </span>
-                  </div>
-                  <div className='mt-1 truncate pl-5.5 text-[10px] opacity-80'>
-                    {p.desc}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        <ArrowRight className='text-muted-foreground/40 hidden size-4 shrink-0 lg:block' />
-
-        {/* Step 3: Deal Outcome */}
-        <div className='flex flex-col items-center justify-center space-y-2.5 rounded-xl border border-amber-500/40 bg-amber-500/[0.06] p-5 text-center shadow-xs'>
-          <Badge
-            variant='outline'
-            className='border-amber-500/50 text-[10px] text-amber-600 dark:text-amber-400'
+    <figure className='relative overflow-hidden rounded-lg border border-white/10 bg-[#07101e] shadow-[0_24px_80px_rgba(50,31,104,0.22)]'>
+      <svg
+        role='img'
+        aria-label={title}
+        viewBox='0 0 760 460'
+        className='h-auto w-full'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <title>{title}</title>
+        <defs>
+          <linearGradient id='deal-bg' x1='0' y1='0' x2='1' y2='1'>
+            <stop stopColor='#070e1c' />
+            <stop offset='.55' stopColor='#0b1022' />
+            <stop offset='1' stopColor='#160b18' />
+          </linearGradient>
+          <linearGradient id='deal-flow' x1='0' y1='0' x2='1' y2='0'>
+            <stop stopColor='#60a5fa' stopOpacity='.1' />
+            <stop offset='.55' stopColor='#8b5cf6' stopOpacity='.85' />
+            <stop offset='1' stopColor='#fb8a6a' />
+          </linearGradient>
+          <radialGradient id='deal-orb'>
+            <stop stopColor='#fb8a6a' stopOpacity='.35' />
+            <stop offset='1' stopColor='#fb8a6a' stopOpacity='0' />
+          </radialGradient>
+          <pattern
+            id='deal-grid'
+            width='34'
+            height='34'
+            patternUnits='userSpaceOnUse'
           >
-            {t('03 · Closed Loop')}
-          </Badge>
-          <div className='text-xl font-bold tracking-tight text-amber-600 sm:text-2xl dark:text-amber-400'>
-            {t('Commercial Deal')}
-          </div>
-          <p className='text-foreground text-xs font-semibold'>
-            {t('Closed Loop: Next Commercial Deal')}
-          </p>
-          <p className='text-muted-foreground text-[11px] leading-snug'>
-            {t(
-              'Every token spent triggers anomaly detection, precision cost controls and customer milestone tracking, closing the loop directly into commercial revenue.'
-            )}
-          </p>
-        </div>
-      </div>
-    </div>
+            <path
+              d='M34 0H0V34'
+              fill='none'
+              stroke='#818cf8'
+              strokeOpacity='.07'
+            />
+          </pattern>
+          <filter id='deal-glow' x='-100%' y='-100%' width='300%' height='300%'>
+            <feGaussianBlur stdDeviation='10' />
+          </filter>
+        </defs>
+
+        <rect width='760' height='460' fill='url(#deal-bg)' />
+        <rect width='760' height='460' fill='url(#deal-grid)' />
+        <circle cx='648' cy='230' r='112' fill='url(#deal-orb)' />
+
+        <g fill='#60a5fa'>
+          <rect x='52' y='106' width='8' height='8' rx='2' fillOpacity='.54' />
+          <rect x='80' y='132' width='13' height='13' rx='3' fillOpacity='.8' />
+          <rect x='121' y='91' width='6' height='6' rx='2' fillOpacity='.65' />
+          <rect
+            x='143'
+            y='150'
+            width='10'
+            height='10'
+            rx='3'
+            fillOpacity='.48'
+          />
+          <rect
+            x='54'
+            y='190'
+            width='14'
+            height='14'
+            rx='3'
+            fillOpacity='.72'
+          />
+          <rect x='105' y='216' width='8' height='8' rx='2' fillOpacity='.48' />
+          <rect
+            x='154'
+            y='201'
+            width='13'
+            height='13'
+            rx='3'
+            fillOpacity='.82'
+          />
+          <rect x='75' y='275' width='9' height='9' rx='2' fillOpacity='.62' />
+          <rect
+            x='125'
+            y='303'
+            width='14'
+            height='14'
+            rx='3'
+            fillOpacity='.72'
+          />
+          <rect x='166' y='266' width='7' height='7' rx='2' fillOpacity='.48' />
+          <rect x='52' y='347' width='7' height='7' rx='2' fillOpacity='.5' />
+          <rect
+            x='96'
+            y='365'
+            width='11'
+            height='11'
+            rx='3'
+            fillOpacity='.68'
+          />
+          <rect x='149' y='336' width='9' height='9' rx='2' fillOpacity='.54' />
+        </g>
+        <g fill='#a78bfa'>
+          <circle cx='102' cy='116' r='4' fillOpacity='.7' />
+          <circle cx='184' cy='125' r='5' fillOpacity='.62' />
+          <circle cx='128' cy='174' r='3' fillOpacity='.72' />
+          <circle cx='83' cy='240' r='4' fillOpacity='.66' />
+          <circle cx='191' cy='230' r='5' fillOpacity='.78' />
+          <circle cx='102' cy='328' r='4' fillOpacity='.64' />
+          <circle cx='183' cy='318' r='3' fillOpacity='.76' />
+        </g>
+
+        <g fill='none' stroke='url(#deal-flow)' strokeLinecap='round'>
+          <path
+            d='M58 110C174 110 205 150 286 170C383 194 428 208 554 221'
+            strokeOpacity='.55'
+          />
+          <path
+            d='M90 138C180 139 228 182 304 196C395 213 447 218 554 226'
+            strokeOpacity='.7'
+          />
+          <path
+            d='M60 196C176 196 228 214 314 218C413 224 452 226 554 229'
+            strokeWidth='1.5'
+            strokeOpacity='.78'
+          />
+          <path
+            d='M110 220C194 223 247 229 325 230C425 231 468 231 554 231'
+            strokeWidth='2'
+          />
+          <path
+            d='M78 280C177 280 230 258 310 248C399 237 460 235 554 233'
+            strokeWidth='1.5'
+            strokeOpacity='.8'
+          />
+          <path
+            d='M132 310C216 303 246 272 326 258C420 241 467 238 554 235'
+            strokeOpacity='.7'
+          />
+          <path
+            d='M58 350C161 347 218 309 298 279C391 244 452 241 554 238'
+            strokeOpacity='.5'
+          />
+        </g>
+
+        <g fill='none' stroke='#818cf8' strokeOpacity='.38'>
+          <rect x='232' y='112' width='64' height='236' rx='18' />
+          <rect x='318' y='132' width='64' height='196' rx='18' />
+          <rect x='404' y='151' width='64' height='158' rx='18' />
+          <rect x='490' y='171' width='64' height='118' rx='18' />
+        </g>
+        <g fill='#c4b5fd'>
+          <circle cx='296' cy='170' r='3' />
+          <circle cx='318' cy='196' r='3' />
+          <circle cx='382' cy='218' r='3' />
+          <circle cx='404' cy='248' r='3' />
+          <circle cx='468' cy='226' r='3' />
+          <circle cx='490' cy='235' r='3' />
+          <circle cx='554' cy='231' r='4' />
+        </g>
+
+        <path
+          d='M554 229H586'
+          stroke='#fb8a6a'
+          strokeWidth='3'
+          strokeLinecap='round'
+        />
+        <circle
+          cx='648'
+          cy='230'
+          r='72'
+          fill='none'
+          stroke='#fb8a6a'
+          strokeOpacity='.26'
+          strokeWidth='16'
+          filter='url(#deal-glow)'
+        />
+        <circle
+          cx='648'
+          cy='230'
+          r='70'
+          fill='#160f18'
+          stroke='#fb8a6a'
+          strokeWidth='12'
+        />
+        <circle
+          cx='648'
+          cy='230'
+          r='56'
+          fill='#090e18'
+          stroke='#fdba74'
+          strokeOpacity='.22'
+        />
+        <path
+          d='M610 257L622 243L635 250L648 229L660 238L679 207'
+          fill='none'
+          stroke='#5eead4'
+          strokeWidth='4'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        />
+        <circle cx='679' cy='207' r='5' fill='#5eead4' />
+
+        <text x='54' y='410' fill='#93c5fd' fontSize='11' fontWeight='700'>
+          TOKEN
+        </text>
+        <text
+          x='648'
+          y='344'
+          fill='#fdba74'
+          fontSize='11'
+          fontWeight='700'
+          textAnchor='middle'
+        >
+          DEAL
+        </text>
+      </svg>
+      <figcaption className='sr-only'>{title}</figcaption>
+    </figure>
   )
 }

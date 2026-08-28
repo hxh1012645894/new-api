@@ -30,7 +30,7 @@ export function FdeSection() {
           <span className='text-muted-foreground text-[11px] font-bold tracking-[0.14em] uppercase'>
             {t('04 / Work with iFAi')}
           </span>
-          <h2 className='mt-3 text-3xl leading-[1.1] font-semibold tracking-[-0.03em] md:text-[40px]'>
+          <h2 className='mt-3 text-3xl leading-tight font-semibold tracking-normal md:text-[40px]'>
             {t('Bring a real scenario. Land it with FDE.')}
           </h2>
           <p className='text-muted-foreground mt-5 max-w-[340px] text-[15px] leading-relaxed'>
