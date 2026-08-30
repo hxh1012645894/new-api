@@ -46,8 +46,12 @@ import {
   CHANNEL_STATUS_CONFIG,
   DEFAULT_ENDPOINT,
   ENDPOINT_OPTIONS,
+  MODELS_DEV_PRESET_ENDPOINT,
   MODELS_DEV_PRESET_ID,
+  OFFICIAL_CHANNEL_ENDPOINT,
   OFFICIAL_CHANNEL_ID,
+  OPENROUTER_CHANNEL_TYPE,
+  OPENROUTER_ENDPOINT,
 } from './constants'
 
 type ChannelSelectorDialogProps = {
@@ -224,12 +228,25 @@ export function ChannelSelectorDialog({
         cell: ({ row }) => {
           const channel = row.original
           const currentEndpoint =
-            channelEndpoints[channel.id] || DEFAULT_ENDPOINT
+            channelEndpoints[channel.id] ??
+            (channel.id === MODELS_DEV_PRESET_ID
+              ? MODELS_DEV_PRESET_ENDPOINT
+              : channel.id === OFFICIAL_CHANNEL_ID
+                ? OFFICIAL_CHANNEL_ENDPOINT
+                : channel.type === OPENROUTER_CHANNEL_TYPE
+                  ? OPENROUTER_ENDPOINT
+                  : DEFAULT_ENDPOINT)
           const endpointType = getEndpointType(currentEndpoint)
 
           const handleTypeChange = (value: string) => {
             if (value === 'custom') {
-              updateEndpoint(channel.id, '')
+              if (channel.id === OFFICIAL_CHANNEL_ID) {
+                updateEndpoint(channel.id, OFFICIAL_CHANNEL_ENDPOINT)
+              } else if (channel.id === MODELS_DEV_PRESET_ID) {
+                updateEndpoint(channel.id, MODELS_DEV_PRESET_ENDPOINT)
+              } else {
+                updateEndpoint(channel.id, '')
+              }
             } else {
               updateEndpoint(channel.id, value)
             }

@@ -1639,9 +1639,15 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
   onRequestRuleExprChange,
 }: TieredPricingEditorProps) {
   const { t } = useTranslation()
-  const [editorMode, setEditorMode] = useState<EditorMode>('visual')
-  const [visualConfig, setVisualConfig] = useState<VisualConfig | null>(() =>
+  const [editorMode, setEditorMode] = useState<EditorMode>(() =>
     tryParseVisualConfig(currentExpr)
+      ? 'visual'
+      : currentExpr
+        ? 'raw'
+        : 'visual'
+  )
+  const [visualConfig, setVisualConfig] = useState<VisualConfig | null>(
+    () => tryParseVisualConfig(currentExpr) ?? createDefaultVisualConfig()
   )
   const [rawExpr, setRawExpr] = useState(() =>
     combineBillingExpr(currentExpr || '', currentRequestRuleExpr || '')
