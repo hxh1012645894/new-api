@@ -288,6 +288,14 @@ export function evalExprLocally(
     const cacheCreate1hTokens = extraTokenValues.cacheCreate1hTokens || 0
     const len =
       promptTokens + cacheReadTokens + cacheCreateTokens + cacheCreate1hTokens
+    const getTimeInZone = (tz: string) => {
+      try {
+        const str = new Date().toLocaleString('en-US', { timeZone: tz })
+        return new Date(str)
+      } catch {
+        return new Date()
+      }
+    }
     const env: Record<string, unknown> = {
       p: promptTokens,
       c: completionTokens,
@@ -298,6 +306,17 @@ export function evalExprLocally(
       abs: Math.abs,
       ceil: Math.ceil,
       floor: Math.floor,
+      hour: (tz: string) => getTimeInZone(tz).getHours(),
+      minute: (tz: string) => getTimeInZone(tz).getMinutes(),
+      weekday: (tz: string) => getTimeInZone(tz).getDay(),
+      month: (tz: string) => getTimeInZone(tz).getMonth() + 1,
+      day: (tz: string) => getTimeInZone(tz).getDate(),
+      header: () => '',
+      param: () => null,
+      has: (src: unknown, text: string) =>
+        typeof src === 'string' && src.includes(text),
+      _trace: (_id: unknown, _matched: unknown, val: number) => val,
+      _trace_int: (_id: unknown, _matched: unknown, val: number) => val,
     }
     for (const field of ESTIMATOR_VARS) {
       env[field.var] = extraTokenValues[field.stateKey] || 0
