@@ -166,12 +166,12 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
     descriptionKey:
       'Configure endpoint routing, authentication and protocol conversion for different upstream services',
     detailKey:
-      "New API's flexible channel lets you configure upstream addresses and authentication per endpoint, choose native forwarding or supported protocol conversions, and configure model listing and balance queries independently",
+      "iFAi's flexible channel lets you configure upstream addresses and authentication per endpoint, choose native forwarding or supported protocol conversions, and configure model listing and balance queries independently",
     badge: { labelKey: 'Flexible integration', tone: 'primary' },
   },
   59: { descriptionKey: 'Connect to model services through a Sub2API gateway' },
   60: {
-    descriptionKey: 'Connect to model services from another New API instance',
+    descriptionKey: 'Connect to model services from another iFAi instance',
   },
   62: { descriptionKey: 'Connect to self-hosted models served by vLLM' },
   63: { descriptionKey: 'Connect to self-hosted models served by SGLang' },
