@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, test, vi } from 'vitest'
@@ -76,8 +77,12 @@ vi.mock('@/stores/auth-store', () => ({
 describe('PublicHeader mobile navigation', () => {
   test('exposes expanded state and makes the closed overlay inert', async () => {
     const user = userEvent.setup()
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
     const { container } = render(
-      <PublicHeader
+      <QueryClientProvider client={queryClient}>
+        <PublicHeader
         navLinks={[
           { title: 'Home', href: '/' },
           { title: 'Console', href: '/dashboard' },
@@ -87,6 +92,7 @@ describe('PublicHeader mobile navigation', () => {
         showNotifications={false}
         showThemeSwitch={false}
       />
+      </QueryClientProvider>
     )
 
     const toggle = screen.getByRole('button', {

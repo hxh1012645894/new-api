@@ -17,7 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@/components/dialog'
@@ -385,7 +391,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <div className='bg-border/40 mx-1 h-4 w-px' />
                   {authContent}
                 </>
-              ) : null}
+              )}
             </div>
 
             {/* Mobile: compact actions + hamburger */}
