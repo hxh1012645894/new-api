@@ -66,7 +66,7 @@ func SetRelayRouter(router *gin.Engine) {
 	playgroundRouter.Use(middleware.SystemPerformanceCheck())
 	playgroundRouter.Use(middleware.UserAuth(), middleware.Distribute())
 	{
-		playgroundRouter.POST("/chat/completions", controller.Playground)
+		playgroundRouter.POST("/chat/completions", middleware.AuditCapture(), controller.Playground)
 	}
 	relayV1Router := router.Group("/v1")
 	relayV1Router.Use(middleware.RouteTag("relay"))
@@ -94,25 +94,25 @@ func SetRelayRouter(router *gin.Engine) {
 		// claude related routes
 		// TODO: /messages/count_tokens is disabled. The current controller.CountClaudeTokens
 		// httpRouter.POST("/messages/count_tokens", controller.CountClaudeTokens)
-		httpRouter.POST("/messages", func(c *gin.Context) {
+		httpRouter.POST("/messages", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatClaude)
 		})
 
 		// chat related routes
-		httpRouter.POST("/completions", func(c *gin.Context) {
+		httpRouter.POST("/completions", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatOpenAI)
 		})
-		httpRouter.POST("/chat/completions", func(c *gin.Context) {
+		httpRouter.POST("/chat/completions", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatOpenAI)
 		})
 
 		// response related routes
-		httpRouter.POST("/responses/compact", func(c *gin.Context) {
+		httpRouter.POST("/responses/compact", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatOpenAIResponsesCompaction)
 		})
 
 		// alpha search related routes (Codex standalone web search)
-		httpRouter.POST("/alpha/search", func(c *gin.Context) {
+		httpRouter.POST("/alpha/search", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatOpenAIAlphaSearch)
 		})
 
@@ -152,7 +152,7 @@ func SetRelayRouter(router *gin.Engine) {
 		httpRouter.POST("/engines/:model/embeddings", func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatGemini)
 		})
-		httpRouter.POST("/models/*path", func(c *gin.Context) {
+		httpRouter.POST("/models/*path", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatGemini)
 		})
 
@@ -204,7 +204,7 @@ func SetRelayRouter(router *gin.Engine) {
 	relayGeminiRouter.Use(middleware.Distribute())
 	{
 		// Gemini API 路径格式: /v1beta/models/{model_name}:{action}
-		relayGeminiRouter.POST("/models/*path", func(c *gin.Context) {
+		relayGeminiRouter.POST("/models/*path", middleware.AuditCapture(), func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatGemini)
 		})
 	}

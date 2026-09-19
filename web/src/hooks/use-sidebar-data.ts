@@ -19,7 +19,8 @@ For commercial licensing, please contact support@quantumnous.com
 import {
   Activity,
   Box,
-  ClipboardList,
+ClipboardList,
+CalendarCheck,
   CreditCard,
   FileText,
   FlaskConical,
@@ -29,6 +30,7 @@ import {
   MessageSquare,
   PlugZap,
   Radio,
+  ScanSearch,
   ServerCog,
   Settings,
   ShieldCheck,
@@ -136,6 +138,16 @@ export function useSidebarData(): SidebarData {
             title: t('Channels'),
             url: '/channels',
             icon: Radio,
+          },
+          {
+            title: t('Content Audit'),
+            url: '/request-audits',
+            icon: ScanSearch,
+          },
+          {
+            title: t('FDE Appointments'),
+            url: '/fde-appointments',
+            icon: CalendarCheck,
           },
           {
             title: t('Models'),

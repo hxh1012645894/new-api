@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { SystemBehaviorSection } from '../general/system-behavior-section'
+import { AuditFeishuSettingsSection } from '../integrations/audit-feishu-settings-section'
 import { EmailSettingsSection } from '../integrations/email-settings-section'
 import { MonitoringSettingsSection } from '../integrations/monitoring-settings-section'
 import { WorkerSettingsSection } from '../integrations/worker-settings-section'
@@ -98,6 +99,34 @@ const OPERATIONS_SECTIONS = [
     build: (settings: OperationsSettings) => (
       <LogSettingsSection
         defaultEnabled={Boolean(settings.LogConsumeEnabled)}
+      />
+    ),
+  },
+  {
+    id: 'audit-feishu',
+    titleKey: 'Content Audit & Feishu Sync',
+    build: (settings: OperationsSettings) => (
+      <AuditFeishuSettingsSection
+        defaultValues={{
+          'audit_setting.enabled': settings['audit_setting.enabled'] ?? false,
+          'audit_setting.sample_rate':
+            settings['audit_setting.sample_rate'] ?? '100',
+          'audit_setting.max_request_bytes':
+            settings['audit_setting.max_request_bytes'] ?? '32768',
+          'audit_setting.max_response_bytes':
+            settings['audit_setting.max_response_bytes'] ?? '65536',
+          'audit_setting.retention_days':
+            settings['audit_setting.retention_days'] ?? '7',
+          'audit_setting.channel_ids':
+            settings['audit_setting.channel_ids'] ?? '',
+          'feishu_setting.enabled': settings['feishu_setting.enabled'] ?? false,
+          'feishu_setting.app_id': settings['feishu_setting.app_id'] ?? '',
+          'feishu_setting.app_secret':
+            settings['feishu_setting.app_secret'] ?? '',
+          'feishu_setting.app_token':
+            settings['feishu_setting.app_token'] ?? '',
+          'feishu_setting.table_id': settings['feishu_setting.table_id'] ?? '',
+        }}
       />
     ),
   },

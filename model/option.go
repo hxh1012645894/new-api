@@ -718,6 +718,8 @@ func handleConfigUpdate(key, value string) bool {
 	} else if configName == "billing_setting" {
 		InvalidatePricingCache()
 		ratio_setting.InvalidateExposedDataCache()
+	} else if configName == "audit_setting" {
+		operation_setting.RefreshAuditChannelFilter()
 	}
 
 	return true // 已处理

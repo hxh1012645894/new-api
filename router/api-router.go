@@ -59,6 +59,20 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/oauth/:provider", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), controller.HandleOAuth)
 		apiRouter.GET("/ratio_config", middleware.CriticalRateLimit(), controller.GetRatioConfig)
 		apiRouter.POST("/fde/appointments", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.CreateFdeAppointment)
+		fdeAdminRoute := apiRouter.Group("/fde/appointments")
+		fdeAdminRoute.Use(middleware.AdminAuth())
+		{
+			fdeAdminRoute.GET("/", controller.GetAllFdeAppointments)
+			fdeAdminRoute.GET("/export", controller.ExportFdeAppointments)
+			fdeAdminRoute.PUT("/:id", controller.UpdateFdeAppointment)
+		}
+
+		requestAuditRoute := apiRouter.Group("/request_audit")
+		requestAuditRoute.Use(middleware.AdminAuth())
+		{
+			requestAuditRoute.GET("/", controller.GetAllRequestAudits)
+			requestAuditRoute.GET("/:id", controller.GetRequestAudit)
+		}
 
 		apiRouter.POST("/stripe/webhook", anonymousRequestBodyLimit, controller.StripeWebhook)
 		apiRouter.POST("/creem/webhook", anonymousRequestBodyLimit, controller.CreemWebhook)

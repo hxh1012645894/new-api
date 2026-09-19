@@ -63,5 +63,8 @@ func CreateFdeAppointment(request dto.FdeAppointmentRequest) (int64, error) {
 	if err := appointment.Insert(); err != nil {
 		return 0, err
 	}
+	// Fan out to the Feishu Bitable in the background; a push failure must
+	// never fail the visitor's submission.
+	go SyncFdeAppointmentToFeishu(&appointment)
 	return appointment.Id, nil
 }

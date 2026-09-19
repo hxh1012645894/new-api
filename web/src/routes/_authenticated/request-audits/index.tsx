@@ -16,17 +16,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-/**
- * Application-wide constants
- */
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import z from 'zod'
 
-// System Configuration Defaults
-export const DEFAULT_SYSTEM_NAME = 'iFAi'
-export const DEFAULT_LOGO = '/ifai-logo.png'
+import { RequestAudits } from '@/features/request-audits'
+import { ROLE } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
 
-// LocalStorage Keys
-export const STORAGE_KEYS = {
-  SYSTEM_NAME: 'system_name',
-  LOGO: 'logo',
-  FOOTER_HTML: 'footer_html',
-} as const
+const auditsSearchSchema = z.object({
+  page: z.number().optional().catch(1),
+  pageSize: z.number().optional().catch(20),
+  filter: z.string().optional().catch(''),
+})
+
+export const Route = createFileRoute('/_authenticated/request-audits/')({
+  beforeLoad: () => {
+    const { auth } = useAuthStore.getState()
+
+    if (!auth.user || auth.user.role < ROLE.ADMIN) {
+      throw redirect({
+        to: '/403',
+      })
+    }
+  },
+  validateSearch: auditsSearchSchema,
+  component: RequestAudits,
+})
