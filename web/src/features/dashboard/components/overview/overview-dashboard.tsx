@@ -48,6 +48,7 @@ import {
 } from '@/components/page-transition'
 import { Button } from '@/components/ui/button'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
@@ -109,7 +110,7 @@ interface QuickAction {
 }
 
 interface RequestExample {
-  endpoint: string
+  baseUrl: string
   model: string
   keyName: string
   keyId?: number
@@ -145,19 +146,21 @@ function getCurrentOrigin(): string {
   return window.location.origin
 }
 
-function normalizeEndpoint(sourceUrl?: string): string {
-  const fallback = `${getCurrentOrigin()}/v1/chat/completions`
+type ApiProtocol = 'openai' | 'anthropic'
+
+function normalizeBaseUrl(sourceUrl?: string): string {
+  const fallback = getCurrentOrigin()
   const trimmed = sourceUrl?.trim()
   if (!trimmed) return fallback
 
   const withoutTrailingSlash = trimmed.replace(/\/+$/, '')
   if (withoutTrailingSlash.endsWith('/v1/chat/completions')) {
-    return withoutTrailingSlash
+    return withoutTrailingSlash.slice(0, -'/v1/chat/completions'.length)
   }
   if (withoutTrailingSlash.endsWith('/v1')) {
-    return `${withoutTrailingSlash}/chat/completions`
+    return withoutTrailingSlash.slice(0, -'/v1'.length)
   }
-  return `${withoutTrailingSlash}/v1/chat/completions`
+  return withoutTrailingSlash
 }
 
 function getPreferredKey(keys: ApiKey[]): ApiKey | null {
@@ -170,17 +173,33 @@ function formatDisplayKey(key?: string): string {
   return `${key.slice(0, 7)}...${key.slice(-4)}`
 }
 
-function buildCurlCommand(args: {
-  endpoint: string
+function buildProtocolCurl(args: {
+  baseUrl: string
   apiKey: string
   model: string
+  protocol: ApiProtocol
 }): string {
-  return [
-    `curl ${args.endpoint} \\`,
-    '  -H "Content-Type: application/json" \\',
-    `  -H "Authorization: Bearer ${args.apiKey}" \\`,
-    `  -d '{"model":"${args.model}","messages":[{"role":"user","content":"Say hello in one sentence."}]}'`,
-  ].join('\n')
+  const prompt = 'Say hello in one sentence.'
+  const body =
+    args.protocol === 'anthropic'
+      ? `{"model":"${args.model}","max_tokens":1024,"messages":[{"role":"user","content":"${prompt}"}]}`
+      : `{"model":"${args.model}","messages":[{"role":"user","content":"${prompt}"}]}`
+
+  const headers = [
+    '-H "Content-Type: application/json" \\',
+    args.protocol === 'anthropic'
+      ? `-H "x-api-key: ${args.apiKey}" \\`
+      : `-H "Authorization: Bearer ${args.apiKey}" \\`,
+  ]
+  if (args.protocol === 'anthropic') {
+    headers.push('-H "anthropic-version: 2023-06-01" \\')
+  }
+
+  const path =
+    args.protocol === 'anthropic' ? '/v1/messages' : '/v1/chat/completions'
+  return [`curl ${args.baseUrl}${path} \\`, ...headers, `  -d '${body}'`].join(
+    '\n'
+  )
 }
 
 function SetupGuideBackdrop(props: { compact?: boolean }) {
@@ -285,11 +304,13 @@ function RequestPreview(props: {
   const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
   const [isCopying, setIsCopying] = useState(false)
+  const [protocol, setProtocol] = useState<ApiProtocol>('openai')
   const { copyToClipboard } = useCopyToClipboard({ notify: false })
-  const previewCurl = buildCurlCommand({
-    endpoint: props.example.endpoint,
+  const previewCurl = buildProtocolCurl({
+    baseUrl: props.example.baseUrl,
     apiKey: props.example.displayKey,
     model: props.example.model,
+    protocol,
   })
   const previewLines = previewCurl.split('\n')
   const handleCopyRequest = async () => {
@@ -304,10 +325,11 @@ function RequestPreview(props: {
         return
       }
 
-      const realCurl = buildCurlCommand({
-        endpoint: props.example.endpoint,
+      const realCurl = buildProtocolCurl({
+        baseUrl: props.example.baseUrl,
         apiKey: `sk-${key}`,
         model: props.example.model,
+        protocol,
       })
       const copied = await copyToClipboard(realCurl)
       if (copied) {
@@ -374,10 +396,30 @@ function RequestPreview(props: {
       </div>
 
       <div className='bg-foreground/[0.035] my-3 rounded-xl p-3 font-mono text-xs'>
-        <div className='mb-2 flex items-center gap-1.5'>
-          <span className='bg-destructive size-2 rounded-full' />
-          <span className='bg-warning size-2 rounded-full' />
-          <span className='bg-success size-2 rounded-full' />
+        <div className='mb-2 flex items-center justify-between gap-2'>
+          <div className='flex items-center gap-1.5'>
+            <span className='bg-destructive size-2 rounded-full' />
+            <span className='bg-warning size-2 rounded-full' />
+            <span className='bg-success size-2 rounded-full' />
+          </div>
+          <ToggleGroup
+            value={[protocol]}
+            onValueChange={(value) => {
+              const nextProtocol = value.find((item) => item !== protocol)
+              if (nextProtocol) setProtocol(nextProtocol as ApiProtocol)
+            }}
+            aria-label={t('API protocol')}
+            size='sm'
+            spacing={0}
+            className='font-sans'
+          >
+            <ToggleGroupItem value='openai' className='h-5 px-2 text-[11px]'>
+              OpenAI
+            </ToggleGroupItem>
+            <ToggleGroupItem value='anthropic' className='h-5 px-2 text-[11px]'>
+              Anthropic
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
         <div className='flex flex-col gap-1 overflow-hidden'>
           {previewLines.map((line) => (
@@ -592,13 +634,13 @@ export function OverviewDashboard() {
   )
 
   const requestExample = useMemo<RequestExample>(() => {
-    const endpoint = normalizeEndpoint(apiInfoItems[0]?.url)
+    const baseUrl = normalizeBaseUrl(apiInfoItems[0]?.url)
     const model = modelsQuery.data?.[0] ?? 'gpt-4o-mini'
     const keyName = preferredKey?.name ?? t('No API key yet')
     const ready = Boolean(preferredKey?.id && model)
 
     return {
-      endpoint,
+      baseUrl,
       model,
       keyName,
       keyId: preferredKey?.id,
