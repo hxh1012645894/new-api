@@ -370,7 +370,6 @@ func migrateDB() error {
 		&SystemTaskLock{},
 		&FdeAppointment{},
 		&RequestAudit{},
-		&RequestAudit{},
 		&CasbinRule{},
 		&AuthzRole{},
 	)
