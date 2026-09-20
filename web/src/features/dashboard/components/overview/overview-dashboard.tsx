@@ -49,7 +49,6 @@ import {
 } from '@/components/page-transition'
 import { Button } from '@/components/ui/button'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
@@ -305,8 +304,12 @@ function RequestPreview(props: {
   const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
   const [isCopying, setIsCopying] = useState(false)
-  const [protocol, setProtocol] = useState<ApiProtocol>('openai')
   const { copyToClipboard } = useCopyToClipboard({ notify: false })
+  // Every model is natively reachable on one protocol; crossing over costs the
+  // Claude prompt cache, so the preview always shows the native one.
+  const protocol: ApiProtocol = props.example.model.startsWith('claude-')
+    ? 'anthropic'
+    : 'openai'
   const previewCurl = buildProtocolCurl({
     baseUrl: props.example.baseUrl,
     apiKey: props.example.displayKey,
@@ -415,30 +418,10 @@ function RequestPreview(props: {
             aria-label={t('Copy URL')}
           />
         </div>
-        <div className='mt-2 mb-2 flex items-center justify-between gap-2'>
-          <div className='flex items-center gap-1.5'>
-            <span className='bg-destructive size-2 rounded-full' />
-            <span className='bg-warning size-2 rounded-full' />
-            <span className='bg-success size-2 rounded-full' />
-          </div>
-          <ToggleGroup
-            value={[protocol]}
-            onValueChange={(value) => {
-              const nextProtocol = value.find((item) => item !== protocol)
-              if (nextProtocol) setProtocol(nextProtocol as ApiProtocol)
-            }}
-            aria-label={t('API protocol')}
-            size='sm'
-            spacing={0}
-            className='font-sans'
-          >
-            <ToggleGroupItem value='openai' className='h-5 px-2 text-[11px]'>
-              OpenAI
-            </ToggleGroupItem>
-            <ToggleGroupItem value='anthropic' className='h-5 px-2 text-[11px]'>
-              Anthropic
-            </ToggleGroupItem>
-          </ToggleGroup>
+        <div className='mt-2 mb-2 flex items-center gap-1.5'>
+          <span className='bg-destructive size-2 rounded-full' />
+          <span className='bg-warning size-2 rounded-full' />
+          <span className='bg-success size-2 rounded-full' />
         </div>
         <div className='flex flex-col gap-1 overflow-hidden'>
           {previewLines.map((line) => (

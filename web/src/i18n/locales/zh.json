@@ -140,7 +140,6 @@
     "API key from the provider": "来自提供商的 API 密钥",
     "API key is loading, please try again in a moment": "API 密钥正在加载，请稍后再试",
     "API key is required": "需要 API 密钥",
-    "API protocol": "API 协议",
     "API secret": "API 秘钥",
     "API token batch deletion": "API 令牌批量删除",
     "API token batch key access": "API 令牌密钥批量查看",

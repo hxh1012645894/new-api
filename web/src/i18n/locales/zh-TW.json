@@ -140,7 +140,6 @@
     "API key from the provider": "來自供應商的 API 金鑰",
     "API key is loading, please try again in a moment": "API 金鑰正在載入，請稍後再試",
     "API key is required": "需要 API 金鑰",
-    "API protocol": "API 協定",
     "API secret": "API 密鑰",
     "API token batch deletion": "API 權杖批次刪除",
     "API token batch key access": "API 權杖金鑰批次檢視",

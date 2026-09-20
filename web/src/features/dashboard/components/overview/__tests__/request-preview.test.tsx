@@ -24,7 +24,6 @@ import {
   RouterProvider,
 } from '@tanstack/react-router'
 import { cleanup, render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/lib/api'
@@ -35,6 +34,7 @@ import { OverviewDashboard } from '../overview-dashboard'
 
 let client: QueryClient
 let apiInfo: Array<{ url: string }> | null
+let userModels: string[]
 
 const originalGetAnimations = Object.getOwnPropertyDescriptor(
   HTMLElement.prototype,
@@ -59,6 +59,7 @@ beforeEach(() => {
     defaultOptions: { queries: { retry: false } },
   })
   apiInfo = null
+  userModels = ['claude-sonnet-5']
   vi.spyOn(api, 'get').mockImplementation(async (url) => {
     switch (url) {
       case '/api/token/?p=1&size=10':
@@ -83,7 +84,7 @@ beforeEach(() => {
           },
         }
       case '/api/user/models':
-        return { data: { success: true, data: ['claude-sonnet-5'] } }
+        return { data: { success: true, data: userModels } }
       case '/api/data/self':
         return { data: { success: true, data: [] } }
       default:
@@ -123,27 +124,15 @@ async function renderOverview() {
 }
 
 async function readRequestPreview() {
-  await screen.findByRole('button', { name: 'Anthropic' })
+  await screen.findByText(/^curl /, { selector: 'code' })
   return [...document.querySelectorAll('code')]
     .map((element) => element.textContent ?? '')
     .join('\n')
 }
 
 describe('overview request preview', () => {
-  it('defaults to the OpenAI chat completions request', async () => {
+  it('shows the Anthropic request for a Claude model, without offering a protocol choice', async () => {
     await renderOverview()
-
-    const preview = await readRequestPreview()
-    expect(preview).toContain('/v1/chat/completions')
-    expect(preview).toContain('Authorization: Bearer')
-    expect(preview).not.toContain('/v1/messages')
-  })
-
-  it('switches to the Anthropic messages request and keeps the selected model', async () => {
-    const user = userEvent.setup()
-    await renderOverview()
-
-    await user.click(await screen.findByRole('button', { name: 'Anthropic' }))
 
     const preview = await readRequestPreview()
     expect(preview).toContain('/v1/messages')
@@ -151,12 +140,24 @@ describe('overview request preview', () => {
     expect(preview).toContain('anthropic-version: 2023-06-01')
     expect(preview).toContain('"model":"claude-sonnet-5"')
     expect(preview).not.toContain('Authorization: Bearer')
+    expect(
+      screen.queryByRole('button', { name: 'API protocol' })
+    ).not.toBeInTheDocument()
+  })
 
-    await user.click(screen.getByRole('button', { name: 'OpenAI' }))
-    expect(await readRequestPreview()).toContain('/v1/chat/completions')
+  it('shows the OpenAI request for a non-Claude model', async () => {
+    userModels = ['kimi-k3']
+    await renderOverview()
+
+    const preview = await readRequestPreview()
+    expect(preview).toContain('/v1/chat/completions')
+    expect(preview).toContain('Authorization: Bearer')
+    expect(preview).toContain('"model":"kimi-k3"')
+    expect(preview).not.toContain('/v1/messages')
   })
 
   it('derives the base URL from the configured API info entry', async () => {
+    userModels = ['kimi-k3']
     apiInfo = [{ url: 'https://gateway.example.com/v1' }]
     await renderOverview()
 
