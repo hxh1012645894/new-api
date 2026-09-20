@@ -41,7 +41,6 @@ import { useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import { CopyButton } from '@/components/copy-button'
 import { SectionPageLayout } from '@/components/layout'
 import {
   CardStaggerContainer,
@@ -110,7 +109,7 @@ interface QuickAction {
 }
 
 interface RequestExample {
-  baseUrl: string
+  endpoint: string
   model: string
   keyName: string
   keyId?: number
@@ -146,21 +145,19 @@ function getCurrentOrigin(): string {
   return window.location.origin
 }
 
-type ApiProtocol = 'openai' | 'anthropic'
-
-function normalizeBaseUrl(sourceUrl?: string): string {
-  const fallback = getCurrentOrigin()
+function normalizeEndpoint(sourceUrl?: string): string {
+  const fallback = `${getCurrentOrigin()}/v1/chat/completions`
   const trimmed = sourceUrl?.trim()
   if (!trimmed) return fallback
 
   const withoutTrailingSlash = trimmed.replace(/\/+$/, '')
   if (withoutTrailingSlash.endsWith('/v1/chat/completions')) {
-    return withoutTrailingSlash.slice(0, -'/v1/chat/completions'.length)
+    return withoutTrailingSlash
   }
   if (withoutTrailingSlash.endsWith('/v1')) {
-    return withoutTrailingSlash.slice(0, -'/v1'.length)
+    return `${withoutTrailingSlash}/chat/completions`
   }
-  return withoutTrailingSlash
+  return `${withoutTrailingSlash}/v1/chat/completions`
 }
 
 function getPreferredKey(keys: ApiKey[]): ApiKey | null {
@@ -173,33 +170,34 @@ function formatDisplayKey(key?: string): string {
   return `${key.slice(0, 7)}...${key.slice(-4)}`
 }
 
+type ApiProtocol = 'openai' | 'anthropic'
+
+// Every model is natively reachable on one protocol, and crossing over costs
+// the Claude prompt cache, so the example follows the model's own protocol.
 function buildProtocolCurl(args: {
-  baseUrl: string
+  endpoint: string
   apiKey: string
   model: string
   protocol: ApiProtocol
 }): string {
   const prompt = 'Say hello in one sentence.'
-  const body =
-    args.protocol === 'anthropic'
-      ? `{"model":"${args.model}","max_tokens":1024,"messages":[{"role":"user","content":"${prompt}"}]}`
-      : `{"model":"${args.model}","messages":[{"role":"user","content":"${prompt}"}]}`
-
+  const isAnthropic = args.protocol === 'anthropic'
+  const requestUrl = isAnthropic
+    ? args.endpoint.replace(/\/v1\/chat\/completions$/, '/v1/messages')
+    : args.endpoint
   const headers = [
-    '-H "Content-Type: application/json" \\',
-    args.protocol === 'anthropic'
-      ? `-H "x-api-key: ${args.apiKey}" \\`
-      : `-H "Authorization: Bearer ${args.apiKey}" \\`,
+    '  -H "Content-Type: application/json" \\',
+    isAnthropic
+      ? `  -H "x-api-key: ${args.apiKey}" \\`
+      : `  -H "Authorization: Bearer ${args.apiKey}" \\`,
   ]
-  if (args.protocol === 'anthropic') {
-    headers.push('-H "anthropic-version: 2023-06-01" \\')
+  if (isAnthropic) {
+    headers.push('  -H "anthropic-version: 2023-06-01" \\')
   }
-
-  const path =
-    args.protocol === 'anthropic' ? '/v1/messages' : '/v1/chat/completions'
-  return [`curl ${args.baseUrl}${path} \\`, ...headers, `  -d '${body}'`].join(
-    '\n'
-  )
+  const body = isAnthropic
+    ? `{"model":"${args.model}","max_tokens":1024,"messages":[{"role":"user","content":"${prompt}"}]}`
+    : `{"model":"${args.model}","messages":[{"role":"user","content":"${prompt}"}]}`
+  return [`curl ${requestUrl} \\`, ...headers, `  -d '${body}'`].join('\n')
 }
 
 function SetupGuideBackdrop(props: { compact?: boolean }) {
@@ -305,13 +303,11 @@ function RequestPreview(props: {
   const shouldReduceMotion = useReducedMotion()
   const [isCopying, setIsCopying] = useState(false)
   const { copyToClipboard } = useCopyToClipboard({ notify: false })
-  // Every model is natively reachable on one protocol; crossing over costs the
-  // Claude prompt cache, so the preview always shows the native one.
   const protocol: ApiProtocol = props.example.model.startsWith('claude-')
     ? 'anthropic'
     : 'openai'
   const previewCurl = buildProtocolCurl({
-    baseUrl: props.example.baseUrl,
+    endpoint: props.example.endpoint,
     apiKey: props.example.displayKey,
     model: props.example.model,
     protocol,
@@ -330,7 +326,7 @@ function RequestPreview(props: {
       }
 
       const realCurl = buildProtocolCurl({
-        baseUrl: props.example.baseUrl,
+        endpoint: props.example.endpoint,
         apiKey: `sk-${key}`,
         model: props.example.model,
         protocol,
@@ -400,25 +396,7 @@ function RequestPreview(props: {
       </div>
 
       <div className='bg-foreground/[0.035] my-3 rounded-xl p-3 font-mono text-xs'>
-        <div className='border-border/60 flex items-center gap-2 border-b pb-2'>
-          <span className='text-muted-foreground font-sans text-[11px] font-medium tracking-wide uppercase'>
-            {t('Base URL')}
-          </span>
-          <code
-            className='text-foreground min-w-0 flex-1 truncate text-xs font-semibold'
-            title={props.example.baseUrl}
-          >
-            {props.example.baseUrl}
-          </code>
-          <CopyButton
-            value={props.example.baseUrl}
-            className='size-5 shrink-0'
-            iconClassName='size-3'
-            tooltip={t('Copy URL')}
-            aria-label={t('Copy URL')}
-          />
-        </div>
-        <div className='mt-2 mb-2 flex items-center gap-1.5'>
+        <div className='mb-2 flex items-center gap-1.5'>
           <span className='bg-destructive size-2 rounded-full' />
           <span className='bg-warning size-2 rounded-full' />
           <span className='bg-success size-2 rounded-full' />
@@ -636,13 +614,13 @@ export function OverviewDashboard() {
   )
 
   const requestExample = useMemo<RequestExample>(() => {
-    const baseUrl = normalizeBaseUrl(apiInfoItems[0]?.url)
+    const endpoint = normalizeEndpoint(apiInfoItems[0]?.url)
     const model = modelsQuery.data?.[0] ?? 'gpt-4o-mini'
     const keyName = preferredKey?.name ?? t('No API key yet')
     const ready = Boolean(preferredKey?.id && model)
 
     return {
-      baseUrl,
+      endpoint,
       model,
       keyName,
       keyId: preferredKey?.id,
