@@ -121,6 +121,9 @@ func main() {
 	// 数据看板
 	go model.UpdateQuotaData()
 
+	// 请求内容审计过期数据清理
+	go service.StartRequestAuditCleaner()
+
 	if os.Getenv("CHANNEL_UPDATE_FREQUENCY") != "" {
 		frequency, err := strconv.Atoi(os.Getenv("CHANNEL_UPDATE_FREQUENCY"))
 		if err != nil {

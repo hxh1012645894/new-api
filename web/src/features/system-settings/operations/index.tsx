@@ -56,6 +56,17 @@ const defaultOperationsSettings: OperationsSettings = {
   'perf_metrics_setting.flush_interval': 5,
   'perf_metrics_setting.bucket_time': 'hour',
   'perf_metrics_setting.retention_days': 0,
+  'audit_setting.enabled': false,
+  'audit_setting.sample_rate': '100',
+  'audit_setting.max_request_bytes': '32768',
+  'audit_setting.max_response_bytes': '65536',
+  'audit_setting.retention_days': '7',
+  'audit_setting.channel_ids': '',
+  'feishu_setting.enabled': false,
+  'feishu_setting.app_id': '',
+  'feishu_setting.app_secret': '',
+  'feishu_setting.app_token': '',
+  'feishu_setting.table_id': '',
 }
 
 export function OperationsSettings() {

@@ -386,6 +386,17 @@ export type OperationsSettings = {
   'perf_metrics_setting.flush_interval': number
   'perf_metrics_setting.bucket_time': 'hour' | 'minute' | '5min'
   'perf_metrics_setting.retention_days': number
+  'audit_setting.enabled': boolean
+  'audit_setting.sample_rate': string
+  'audit_setting.max_request_bytes': string
+  'audit_setting.max_response_bytes': string
+  'audit_setting.retention_days': string
+  'audit_setting.channel_ids': string
+  'feishu_setting.enabled': boolean
+  'feishu_setting.app_id': string
+  'feishu_setting.app_secret': string
+  'feishu_setting.app_token': string
+  'feishu_setting.table_id': string
 }
 
 export type SecuritySettings = {
