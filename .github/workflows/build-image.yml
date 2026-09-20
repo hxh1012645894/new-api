@@ -10,8 +10,8 @@ permissions:
   packages: write
 
 jobs:
-  test:
-    name: Run verification tests
+  test-backend:
+    name: Run backend verification tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,19 +28,45 @@ jobs:
           go test ./common/... ./controller/... ./middleware/...
           cd relaykit && GOWORK=off go build ./...
 
+  test-frontend:
+    name: Run frontend verification tests (shard ${{ matrix.shard }}/3)
+    runs-on: ubuntu-latest
+    strategy:
+      # Every shard must report, so a failure in one cannot hide the others.
+      fail-fast: false
+      matrix:
+        shard: ['1', '2', '3']
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('web/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install
+        working-directory: web
+        run: bun install --frozen-lockfile
+
+      # Typecheck covers the whole project, so it runs in one shard only.
+      - name: Typecheck
+        if: matrix.shard == '1'
+        working-directory: web
+        run: bun run typecheck
+
       - name: Test frontend
-        run: |
-          cd web
-          bun install --frozen-lockfile
-          bun run typecheck
-          bun run test
+        working-directory: web
+        run: bun run test --shard=${{ matrix.shard }}/3
 
   build:
     name: Build and push Docker image
-    needs: test
+    needs: [test-backend, test-frontend]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
