@@ -113,6 +113,12 @@ type ColumnWithSizing<TData> = ColumnDef<TData, unknown> & {
 
 const COLUMN_SIZING_PERSIST_DELAY_MS = 250
 
+// The table gets a controlled `state`, so TanStack returns exactly what is
+// passed here instead of filling in its own defaults. Tables without filtering
+// still need an array: the toolbar reads `columnFilters.length`. One shared
+// value keeps the reference stable across renders.
+const EMPTY_COLUMN_FILTERS: ColumnFiltersState = []
+
 function resolveUpdater<TValue>(
   updater: Updater<TValue>,
   previous: TValue
@@ -388,7 +394,7 @@ export function useDataTable<TData>(options: UseDataTableOptions<TData>) {
       columnSizing,
       rowSelection,
       expanded,
-      columnFilters: options.columnFilters,
+      columnFilters: options.columnFilters ?? EMPTY_COLUMN_FILTERS,
       globalFilter: options.globalFilter,
       pagination,
     },
