@@ -69,6 +69,14 @@ export type PricingModel = {
   model_ratio: number
   completion_ratio: number
   model_price?: number
+  /**
+   * Published list price in USD per million tokens, set by an administrator as
+   * a reference point. Display only; the charge comes from the ratio/expression
+   * above. Absent or zero means "not published" and the square hides the
+   * discount for that lane.
+   */
+  official_input_price?: number
+  official_output_price?: number
   cache_ratio?: number | null
   create_cache_ratio?: number | null
   image_ratio?: number | null

@@ -59,10 +59,10 @@ import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { getLobeIcon } from '@/lib/lobe-icon'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
-import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
 import { useBillingTime } from '../hooks/use-billing-time'
+import { usePricingCurrencyKey } from '../hooks/use-pricing-currency-key'
 import { usePricingData } from '../hooks/use-pricing-data'
 import type { ParsedTaskTier } from '../lib/billing-expr'
 import { formatBillingCondition } from '../lib/billing-expression/condition-display'
@@ -648,7 +648,7 @@ function PriceSection(props: {
   const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
   const baseGroupKey = '_base'
   const baseGroupRatioMap = { [baseGroupKey]: 1 }
-  const currency = useSystemConfigStore((state) => state.config.currency)
+  const pricingCurrencyKey = usePricingCurrencyKey()
   const billingTime = useBillingTime(props.model.billing_expr)
   const dynamicSummary = useMemo(
     () =>
@@ -669,7 +669,7 @@ function PriceSection(props: {
       props.priceRate,
       props.usdExchangeRate,
       billingTime,
-      currency,
+      pricingCurrencyKey,
     ]
   )
 

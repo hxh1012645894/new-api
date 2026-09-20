@@ -33,19 +33,25 @@ type BoundChannel struct {
 }
 
 type Model struct {
-	Id                 int            `json:"id"`
-	ModelName          string         `json:"model_name" gorm:"size:128;not null;uniqueIndex:uk_model_name_delete_at,priority:1"`
-	Description        string         `json:"description,omitempty" gorm:"type:text"`
-	Icon               string         `json:"icon,omitempty" gorm:"type:varchar(128)"`
-	Tags               string         `json:"tags,omitempty" gorm:"type:varchar(255)"`
-	VendorID           int            `json:"vendor_id,omitempty" gorm:"index"`
-	Endpoints          string         `json:"endpoints,omitempty" gorm:"type:text"`
-	SupportedEndpoints []string       `json:"supported_endpoints,omitempty" gorm:"-"`
-	Status             int            `json:"status" gorm:"default:1"`
-	SyncOfficial       int            `json:"sync_official" gorm:"default:1"`
-	CreatedTime        int64          `json:"created_time" gorm:"bigint"`
-	UpdatedTime        int64          `json:"updated_time" gorm:"bigint"`
-	DeletedAt          gorm.DeletedAt `json:"-" gorm:"index;uniqueIndex:uk_model_name_delete_at,priority:2"`
+	Id                 int      `json:"id"`
+	ModelName          string   `json:"model_name" gorm:"size:128;not null;uniqueIndex:uk_model_name_delete_at,priority:1"`
+	Description        string   `json:"description,omitempty" gorm:"type:text"`
+	Icon               string   `json:"icon,omitempty" gorm:"type:varchar(128)"`
+	Tags               string   `json:"tags,omitempty" gorm:"type:varchar(255)"`
+	VendorID           int      `json:"vendor_id,omitempty" gorm:"index"`
+	Endpoints          string   `json:"endpoints,omitempty" gorm:"type:text"`
+	SupportedEndpoints []string `json:"supported_endpoints,omitempty" gorm:"-"`
+	Status             int      `json:"status" gorm:"default:1"`
+	SyncOfficial       int      `json:"sync_official" gorm:"default:1"`
+	// Published list price in USD per million tokens, entered by an administrator
+	// as a reference point for the pricing square. It never takes part in
+	// billing: the charge stays whatever the configured pricing resolves to. Zero
+	// means "not set", and the square then shows no discount.
+	OfficialInputPrice  float64        `json:"official_input_price,omitempty"`
+	OfficialOutputPrice float64        `json:"official_output_price,omitempty"`
+	CreatedTime         int64          `json:"created_time" gorm:"bigint"`
+	UpdatedTime         int64          `json:"updated_time" gorm:"bigint"`
+	DeletedAt           gorm.DeletedAt `json:"-" gorm:"index;uniqueIndex:uk_model_name_delete_at,priority:2"`
 
 	BoundChannels []BoundChannel `json:"bound_channels,omitempty" gorm:"-"`
 	EnableGroups  []string       `json:"enable_groups,omitempty" gorm:"-"`
@@ -265,7 +271,7 @@ func (mi *Model) Update() error {
 		}
 		mi.UpdatedTime = common.GetTimestamp()
 		return tx.Model(&Model{}).Where("id = ?", mi.Id).
-			Select("model_name", "description", "icon", "tags", "vendor_id", "endpoints", "status", "sync_official", "name_rule", "updated_time").Updates(mi).Error
+			Select("model_name", "description", "icon", "tags", "vendor_id", "endpoints", "status", "sync_official", "name_rule", "official_input_price", "official_output_price", "updated_time").Updates(mi).Error
 	})
 }
 

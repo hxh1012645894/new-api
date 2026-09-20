@@ -32,6 +32,8 @@ type Pricing struct {
 	Icon                   string                               `json:"icon,omitempty"`
 	Tags                   string                               `json:"tags,omitempty"`
 	VendorID               int                                  `json:"vendor_id,omitempty"`
+	OfficialInputPrice     float64                              `json:"official_input_price,omitempty"`
+	OfficialOutputPrice    float64                              `json:"official_output_price,omitempty"`
 	QuotaType              int                                  `json:"quota_type"`
 	ModelRatio             float64                              `json:"model_ratio"`
 	ModelPrice             float64                              `json:"model_price"`
@@ -343,6 +345,8 @@ func updatePricing() {
 			pricing.Icon = meta.Icon
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
+			pricing.OfficialInputPrice = meta.OfficialInputPrice
+			pricing.OfficialOutputPrice = meta.OfficialOutputPrice
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {

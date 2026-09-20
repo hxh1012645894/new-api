@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { formatBillingCurrencyFromUSD } from '@/lib/currency'
+import { formatPricingCurrencyFromUSD } from '@/lib/currency'
 
 import { QUOTA_TYPE_VALUES, TOKEN_UNIT_DIVISORS } from '../constants'
 import type { PricingModel, TokenUnit, PriceType } from '../types'
@@ -108,7 +108,7 @@ function hasRatio(value: number | null | undefined): boolean {
  * priceRate represents how much users need to recharge (in the display currency)
  * to get 1 USD credit. usdExchangeRate is the real exchange rate.
  *
- * The returned value will be formatted by formatBillingCurrencyFromUSD, which will
+ * The returned value will be formatted by formatPricingCurrencyFromUSD, which will
  * multiply by the display currency's exchange rate.
  *
  * Examples:
@@ -118,14 +118,14 @@ function hasRatio(value: number | null | undefined): boolean {
  *    - priceRate = 0.5 (recharge $0.5 to get $1 credit)
  *    - usdExchangeRate = 1
  *    - Return: 1 × 0.5 / 1 = 0.5
- *    - formatBillingCurrencyFromUSD(0.5) → $0.5 ✓
+ *    - formatPricingCurrencyFromUSD(0.5) → $0.5 ✓
  *
  * 2. Display currency = CNY:
  *    - Model: 1 USD
  *    - priceRate = 4 (recharge ¥4 to get $1 credit)
  *    - usdExchangeRate = 7 (real rate: 1 USD = ¥7)
  *    - Return: 1 × 4 / 7 = 0.571
- *    - formatBillingCurrencyFromUSD(0.571) → 0.571 × 7 = ¥4 ✓
+ *    - formatPricingCurrencyFromUSD(0.571) → 0.571 × 7 = ¥4 ✓
  *    - Normal price: ¥7, Recharge price: ¥4 (cheaper!)
  */
 function applyRechargeRate(
@@ -166,12 +166,75 @@ export function formatPrice(
   )
 
   const price = priceInUSD / TOKEN_UNIT_DIVISORS[tokenUnit]
-  return formatBillingCurrencyFromUSD(price, {
+  return formatPricingCurrencyFromUSD(price, {
     showSymbol: showCurrencySymbol,
     digitsLarge: 4,
     digitsSmall: 6,
     abbreviate: false,
   })
+}
+
+export type OfficialPrice = {
+  /** The published list price, formatted for the same lane and token unit. */
+  formatted: string
+  /** Fraction off — 0.6 means 60% off. */
+  discount: number
+}
+
+/**
+ * Published list price for one lane, and how far our configured price sits
+ * below it.
+ *
+ * Both numbers go through the same group ratio and recharge adjustment as
+ * `formatPrice`, so the strikethrough stays comparable with the charge the
+ * caller is displaying next to it. Returns null when the model publishes no
+ * price for that lane, or when our price is not actually below it — there is
+ * nothing to strike through or advertise in either case.
+ */
+export function officialPriceFor(
+  model: PricingModel,
+  type: 'input' | 'output',
+  tokenUnit: TokenUnit,
+  showWithRecharge = false,
+  priceRate = 1,
+  usdExchangeRate = 1,
+  selectedGroup?: string,
+  showCurrencySymbol = true
+): OfficialPrice | null {
+  if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) return null
+  // Expression-priced models do not charge the ratio table at all, so a
+  // discount computed from `model_ratio` would be fiction.
+  if (model.billing_mode === 'tiered_expr') return null
+
+  const official =
+    type === 'input' ? model.official_input_price : model.official_output_price
+  if (!official || official <= 0) return null
+
+  const adjust = (usd: number) =>
+    applyRechargeRate(usd, showWithRecharge, priceRate, usdExchangeRate)
+
+  const officialUSD = adjust(official)
+  const oursUSD = adjust(
+    calculateTokenPrice(model, type, getDisplayGroupRatio(model, selectedGroup))
+  )
+  if (!Number.isFinite(officialUSD) || officialUSD <= 0) return null
+  if (!Number.isFinite(oursUSD)) return null
+
+  const discount = 1 - oursUSD / officialUSD
+  if (discount <= 0) return null
+
+  return {
+    formatted: formatPricingCurrencyFromUSD(
+      officialUSD / TOKEN_UNIT_DIVISORS[tokenUnit],
+      {
+        showSymbol: showCurrencySymbol,
+        digitsLarge: 4,
+        digitsSmall: 6,
+        abbreviate: false,
+      }
+    ),
+    discount,
+  }
 }
 
 /**
@@ -202,7 +265,7 @@ export function formatGroupPrice(
   )
 
   const price = priceInUSD / TOKEN_UNIT_DIVISORS[tokenUnit]
-  return formatBillingCurrencyFromUSD(price, {
+  return formatPricingCurrencyFromUSD(price, {
     digitsLarge: 4,
     digitsSmall: 6,
     abbreviate: false,
@@ -234,7 +297,7 @@ export function formatFixedPrice(
     usdExchangeRate
   )
 
-  return formatBillingCurrencyFromUSD(priceInUSD, {
+  return formatPricingCurrencyFromUSD(priceInUSD, {
     digitsLarge: 4,
     digitsSmall: 4,
     abbreviate: false,
@@ -267,7 +330,7 @@ export function formatRequestPrice(
     usdExchangeRate
   )
 
-  return formatBillingCurrencyFromUSD(priceInUSD, {
+  return formatPricingCurrencyFromUSD(priceInUSD, {
     showSymbol: showCurrencySymbol,
     digitsLarge: 4,
     digitsSmall: 4,

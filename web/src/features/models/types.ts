@@ -49,6 +49,9 @@ export interface Model {
   supported_endpoints?: string[]
   status: number
   sync_official: number
+  /** Published list price in USD per million tokens; display only. */
+  official_input_price?: number
+  official_output_price?: number
   created_time: number
   updated_time: number
   name_rule: number

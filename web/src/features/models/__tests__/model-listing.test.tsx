@@ -631,6 +631,10 @@ it.each([
 )
 
 it('shows task tier ranges in the schema unit and converts site currency only once', async () => {
+  // English readers are quoted USD, so the site currency only shows up in the
+  // other languages. The button is found by model name because the accessible
+  // name is translated.
+  await i18n.changeLanguage('zhCN')
   useSystemConfigStore.getState().setConfig({
     currency: {
       ...DEFAULT_CURRENCY_CONFIG,
@@ -659,10 +663,10 @@ it('shows task tier ranges in the schema unit and converts site currency only on
     ],
   })
   const button = screen.getByRole('button', {
-    name: 'View pricing for channel-only',
+    name: i18n.t('View pricing for {{model}}', { model: 'channel-only' }),
   })
   expect(button).toHaveTextContent(/2.8.*5.6/)
-  expect(button).toHaveTextContent('/s')
+  expect(button).toHaveTextContent(`/${i18n.t('s')}`)
   expect(button).toHaveTextContent('CNY')
   expect(button).not.toHaveTextContent('¥')
   expect(button).not.toHaveTextContent('1M tokens')
@@ -820,11 +824,13 @@ it('keeps an active visibility filter when its server result is empty', async ()
 })
 
 it.each([
-  { type: 'CUSTOM' as const, caption: '🐱 / 1M tokens' },
-  { type: 'TOKENS' as const, caption: 'USD / 1M tokens' },
+  { type: 'CUSTOM' as const, currencyLabel: '🐱', language: 'zhCN' },
+  { type: 'TOKENS' as const, currencyLabel: 'USD', language: 'en' },
+  { type: 'CUSTOM' as const, currencyLabel: 'USD', language: 'en' },
 ])(
   'uses one currency caption in $type mode without replacing prices with quota counts',
-  async ({ type, caption }) => {
+  async ({ type, currencyLabel, language }) => {
+    await i18n.changeLanguage(language)
     useSystemConfigStore.getState().setConfig({
       currency: {
         ...DEFAULT_CURRENCY_CONFIG,
@@ -844,14 +850,48 @@ it.each([
       ],
     })
     const button = screen.getByRole('button', {
-      name: 'View pricing for channel-only',
+      name: i18n.t('View pricing for {{model}}', { model: 'channel-only' }),
     })
     expect(button.textContent?.replaceAll(/\s/g, '')).toContain(
-      'Input0.5Output1'
+      `${i18n.t('Input')}0.5${i18n.t('Output')}1`
     )
+    const caption = i18n.t('{{currency}} / {{unit}} tokens', {
+      currency: currencyLabel,
+      unit: '1M',
+    })
     expect(within(button).getByText(caption)).toBeVisible()
-    if (type === 'CUSTOM') {
+    if (type === 'CUSTOM' && language !== 'en') {
       expect(button.textContent?.match(/🐱/g)).toHaveLength(1)
     }
   }
 )
+
+it('quotes USD to English readers despite the site currency symbol', async () => {
+  await i18n.changeLanguage('en')
+  useSystemConfigStore.getState().setConfig({
+    currency: {
+      ...DEFAULT_CURRENCY_CONFIG,
+      quotaDisplayType: 'CUSTOM',
+      customCurrencySymbol: '🐱',
+      customCurrencyExchangeRate: 7,
+    },
+  })
+  await renderList([channel], {
+    pricing: [
+      {
+        model_name: channel.model_name,
+        version: 'v1',
+        configured: {},
+        effective: { ModelRatio: 0.25, CompletionRatio: 2 },
+      },
+    ],
+  })
+  const button = screen.getByRole('button', {
+    name: 'View pricing for channel-only',
+  })
+
+  // No custom symbol and no ×7 conversion: the square stays on USD.
+  expect(within(button).getByText('USD / 1M tokens')).toBeVisible()
+  expect(button).not.toHaveTextContent('🐱')
+  expect(button.textContent?.replaceAll(/\s/g, '')).toContain('Input0.5Output1')
+})

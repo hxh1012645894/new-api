@@ -78,6 +78,8 @@ For commercial licensing, please contact support@quantumnous.com
  * 4. **Billing displays**: Use formatBillingCurrencyFromUSD() to avoid token display
  * 5. **Effective exchange rate**: When quotaDisplayType is 'USD', use rate of 1 regardless of config
  */
+import i18next from 'i18next'
+
 import {
   useSystemConfigStore,
   DEFAULT_CURRENCY_CONFIG,
@@ -226,6 +228,30 @@ function getBillingDisplayMeta(config: CurrencyConfig): DisplayMeta {
     }
   }
   return meta
+}
+
+/**
+ * Whether the pricing square should quote USD regardless of the site currency.
+ *
+ * English readers are usually comparing our rates against prices published in
+ * USD, so the square quotes dollars for them even when the site bills in CNY.
+ * Every other language keeps the admin-configured display currency.
+ */
+function pricingDisplayInUSD(): boolean {
+  const language = i18next.resolvedLanguage ?? i18next.language
+  return language?.toLowerCase() === 'en'
+}
+
+function getPricingDisplayMeta(config: CurrencyConfig): DisplayMeta {
+  if (pricingDisplayInUSD()) {
+    return {
+      kind: 'currency',
+      symbol: '$',
+      currencyCode: 'USD',
+      exchangeRate: 1,
+    }
+  }
+  return getBillingDisplayMeta(config)
 }
 
 function mergeOptions(
@@ -486,6 +512,31 @@ export function formatBillingCurrencyFromUSD(
 }
 
 /**
+ * Format a USD model price for the pricing square.
+ *
+ * Identical to `formatBillingCurrencyFromUSD` except that English readers are
+ * quoted USD even when the site displays another currency. Use this only for
+ * model catalog prices; balances, payments and usage logs keep the site
+ * currency so the numbers still match what was charged.
+ */
+export function formatPricingCurrencyFromUSD(
+  amountUSD: number | null | undefined,
+  options?: CurrencyFormatOptions
+): string {
+  if (amountUSD == null || Number.isNaN(amountUSD)) return '-'
+
+  const { config } = getCurrencyDisplay()
+  const meta = getPricingDisplayMeta(config)
+  const merged = mergeOptions(options)
+  const value =
+    meta.kind === 'currency' || meta.kind === 'custom'
+      ? amountUSD * meta.exchangeRate
+      : amountUSD
+
+  return formatCurrencyValue(value, merged, meta)
+}
+
+/**
  * Format raw quota values (token units) to display currency.
  *
  * Converts raw quota/token amounts to USD first, then formats according
@@ -559,6 +610,17 @@ export function getCurrencyLabel(): string {
     default:
       return 'USD'
   }
+}
+
+/**
+ * Currency label matching `formatPricingCurrencyFromUSD`, for pricing-square
+ * captions such as "USD / 1M tokens". Token-only display is reported as USD
+ * because the square always quotes money, never token counts.
+ */
+export function getPricingCurrencyLabel(): string {
+  if (pricingDisplayInUSD()) return 'USD'
+  const label = getCurrencyLabel()
+  return label === 'Tokens' ? 'USD' : label
 }
 
 /**

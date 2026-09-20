@@ -19,10 +19,9 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useSystemConfigStore } from '@/stores/system-config-store'
-
 import { DEFAULT_TOKEN_UNIT } from '../constants'
 import { useBillingTime } from '../hooks/use-billing-time'
+import { usePricingCurrencyKey } from '../hooks/use-pricing-currency-key'
 import {
   getDynamicDisplayGroupRatio,
   getDynamicPricingSummary,
@@ -49,7 +48,7 @@ export function CachedPriceCell(props: {
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
 
   const model = props.model
-  const currency = useSystemConfigStore((state) => state.config.currency)
+  const pricingCurrencyKey = usePricingCurrencyKey()
   const billingTime = useBillingTime(model.billing_expr)
   const dynamicSummary = useMemo(
     () =>
@@ -71,7 +70,7 @@ export function CachedPriceCell(props: {
       usdExchangeRate,
       selectedGroup,
       billingTime,
-      currency,
+      pricingCurrencyKey,
     ]
   )
 

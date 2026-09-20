@@ -22,8 +22,8 @@ import { useTranslation } from 'react-i18next'
 
 import { StaticDataTable } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
+import { formatPricingCurrencyFromUSD } from '@/lib/currency'
 import { cn } from '@/lib/utils'
-import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import {
   BILLING_PRICING_VARS,
@@ -196,8 +196,6 @@ function formatBreakdownConditionSummary(
 function formatBreakdownPrice(
   value: number,
   field: BreakdownPriceField,
-  symbol: string,
-  rate: number,
   t: (key: string) => string,
   taskPriceOptions: DynamicPricingBreakdownProps['taskPriceOptions'],
   language: string
@@ -207,7 +205,7 @@ function formatBreakdownPrice(
     field.unit === 'request' ||
     field.unit === 'image'
       ? formatTaskUsageUnitPrice(value, { tokenUnit: 'M', ...taskPriceOptions })
-      : `${symbol}${(value * rate).toFixed(4)}`
+      : formatPricingCurrencyFromUSD(value, { digitsLarge: 4, digitsSmall: 4 })
   if (field.unit === 'second') return `${amount}/${t('s')}`
   if (field.unit === 'count') {
     return `${amount}/${taskUsageUnitLabel(field, language, t('unit'))}`
@@ -292,20 +290,6 @@ export function DynamicPricingBreakdown({
 }: DynamicPricingBreakdownProps) {
   const { t, i18n } = useTranslation()
   const expr = billingExpr || ''
-  const currency = useSystemConfigStore((s) => s.config.currency)
-
-  const { symbol, rate } = useMemo(() => {
-    if (currency.quotaDisplayType === 'CNY') {
-      return { symbol: '¥', rate: currency.usdExchangeRate || 7 }
-    }
-    if (currency.quotaDisplayType === 'CUSTOM') {
-      return {
-        symbol: currency.customCurrencySymbol || '¤',
-        rate: currency.customCurrencyExchangeRate || 1,
-      }
-    }
-    return { symbol: '$', rate: 1 }
-  }, [currency])
 
   const { tiers, ruleGroups } = useMemo(() => {
     const split = splitBillingExprAndRequestRules(expr)
@@ -563,8 +547,6 @@ export function DynamicPricingBreakdown({
                               ? formatBreakdownPrice(
                                   value,
                                   field,
-                                  symbol,
-                                  rate,
                                   t,
                                   taskPriceOptions,
                                   i18n.language
@@ -680,8 +662,6 @@ export function DynamicPricingBreakdown({
                       {formatBreakdownPrice(
                         value,
                         field,
-                        symbol,
-                        rate,
                         t,
                         taskPriceOptions,
                         i18n.language

@@ -201,7 +201,10 @@ afterEach(async () => {
   await i18next.changeLanguage('en')
 })
 
-it('refreshes memoized provider prices when the group or display currency changes', () => {
+it('refreshes memoized provider prices when the group or display currency changes', async () => {
+  // Not English: English readers are quoted USD on the square, so the site
+  // currency only applies to the other languages.
+  await i18next.changeLanguage('zhCN')
   const previous = useSystemConfigStore.getState().config.currency
   useSystemConfigStore
     .getState()

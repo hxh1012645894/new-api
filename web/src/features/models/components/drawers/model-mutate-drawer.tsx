@@ -592,6 +592,72 @@ export function ModelMutateDrawer(props: {
                         )}
                       />
                     </SideDrawerSection>
+
+                    {/* Published list price */}
+                    <SideDrawerSection>
+                      <h3 className='text-sm font-semibold'>
+                        {t('Published list price')}
+                      </h3>
+                      <p className='text-muted-foreground text-xs'>
+                        {t(
+                          'Shown struck through on the model square, with the discount against it. It never changes what users are charged — the charge comes from the pricing configuration.'
+                        )}
+                      </p>
+
+                      <FormField
+                        control={form.control}
+                        name='official_input_price'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('Official input price')}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type='number'
+                                min='0'
+                                step='0.01'
+                                {...field}
+                                value={
+                                  field.value == null ? '' : String(field.value)
+                                }
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t(
+                                'USD per 1M tokens. Leave at 0 to hide the discount for this lane.'
+                              )}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name='official_output_price'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('Official output price')}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type='number'
+                                min='0'
+                                step='0.01'
+                                {...field}
+                                value={
+                                  field.value == null ? '' : String(field.value)
+                                }
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t(
+                                'USD per 1M tokens. Leave at 0 to hide the discount for this lane.'
+                              )}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </SideDrawerSection>
                   </form>
                 </Form>
               )}

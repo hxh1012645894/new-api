@@ -19,11 +19,11 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { getCurrencyLabel } from '@/lib/currency'
-import { useSystemConfigStore } from '@/stores/system-config-store'
+import { getPricingCurrencyLabel } from '@/lib/currency'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
 import { useBillingTime } from '../hooks/use-billing-time'
+import { usePricingCurrencyKey } from '../hooks/use-pricing-currency-key'
 import {
   getDynamicDisplayGroupRatio,
   getDynamicPriceUnitLabelKey,
@@ -31,9 +31,15 @@ import {
   isUnconfiguredTaskUsageModel,
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
-import { formatPrice, formatRequestPrice } from '../lib/price'
+import {
+  formatPrice,
+  formatRequestPrice,
+  officialPriceFor,
+  type OfficialPrice,
+} from '../lib/price'
 import { taskUsageUnitLabel } from '../lib/task-price-display'
 import type { PricingModel, TokenUnit } from '../types'
+import { DiscountBadge, OfficialPriceStrike } from './official-price'
 
 export type ModelPriceCellOptions = {
   tokenUnit?: TokenUnit
@@ -49,9 +55,8 @@ export function ModelPriceCell(props: {
   showExpression?: boolean
 }) {
   const { t, i18n } = useTranslation()
-  const currency = useSystemConfigStore((state) => state.config.currency)
-  const currencyLabel =
-    currency.quotaDisplayType === 'TOKENS' ? 'USD' : getCurrencyLabel()
+  const currencyLabel = getPricingCurrencyLabel()
+  const pricingCurrencyKey = usePricingCurrencyKey()
   const options = props.options ?? {}
   const tokenUnit = options.tokenUnit ?? DEFAULT_TOKEN_UNIT
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
@@ -80,10 +85,14 @@ export function ModelPriceCell(props: {
       options.showRechargePrice,
       options.selectedGroup,
       billingTime,
-      currency,
+      pricingCurrencyKey,
     ]
   )
-  let metrics: Array<{ label: string; value: string }>
+  let metrics: Array<{
+    label: string
+    value: string
+    official?: OfficialPrice | null
+  }>
   const providerCaption = dynamic?.providerCount
     ? t('{{count}} providers', { count: dynamic.providerCount })
     : ''
@@ -188,6 +197,17 @@ export function ModelPriceCell(props: {
       )
     }
     if (tokenBased) {
+      const officialFor = (type: 'input' | 'output') =>
+        officialPriceFor(
+          props.model,
+          type,
+          tokenUnit,
+          options.showRechargePrice,
+          options.priceRate,
+          options.usdExchangeRate,
+          options.selectedGroup,
+          false
+        )
       metrics = [
         {
           label: t('Input'),
@@ -201,6 +221,7 @@ export function ModelPriceCell(props: {
             options.selectedGroup,
             false
           ),
+          official: officialFor('input'),
         },
         {
           label: t('Output'),
@@ -214,6 +235,7 @@ export function ModelPriceCell(props: {
             options.selectedGroup,
             false
           ),
+          official: officialFor('output'),
         },
       ]
     } else {
@@ -249,6 +271,9 @@ export function ModelPriceCell(props: {
             >
               {metric.label}
             </span>
+            {metric.official && (
+              <OfficialPriceStrike official={metric.official} />
+            )}
             <span
               className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
               title={metric.value}
@@ -258,11 +283,16 @@ export function ModelPriceCell(props: {
           </span>
         ))}
       </span>
-      <span
-        className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
-        title={caption}
-      >
-        {caption}
+      <span className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1'>
+        <span
+          className='text-muted-foreground min-w-0 text-xs font-normal break-words whitespace-normal sm:truncate'
+          title={caption}
+        >
+          {caption}
+        </span>
+        <DiscountBadge
+          official={metrics.map((metric) => metric.official ?? null)}
+        />
       </span>
     </span>
   )

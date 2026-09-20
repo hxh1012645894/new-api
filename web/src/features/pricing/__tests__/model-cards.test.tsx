@@ -106,6 +106,45 @@ describe('model cards', () => {
       '$0'
     )
   })
+  it('strikes through the published list price and advertises the discount', () => {
+    const model = pricingModel({
+      official_input_price: 4,
+      official_output_price: 12,
+    })
+    render(<ModelCard model={model} onClick={vi.fn()} tokenUnit='M' />)
+
+    // Charges are $2 and $6 per 1M against published $4 and $12.
+    expect(screen.getByText('$4')).toHaveClass('line-through')
+    expect(screen.getByText('$12')).toHaveClass('line-through')
+    expect(screen.getByText('$2')).toBeVisible()
+    expect(screen.getByText('50% off')).toBeVisible()
+  })
+  it('advertises a range when the lanes are discounted differently', () => {
+    const model = pricingModel({
+      official_input_price: 4,
+      official_output_price: 8,
+    })
+    render(<ModelCard model={model} onClick={vi.fn()} tokenUnit='M' />)
+
+    expect(screen.getByText('25–50% off')).toBeVisible()
+  })
+  it('shows no discount when the model publishes no list price', () => {
+    render(<ModelCard model={pricingModel()} onClick={vi.fn()} tokenUnit='M' />)
+
+    expect(screen.queryByText(/% off$/)).not.toBeInTheDocument()
+    expect(screen.queryByText('$4')).not.toBeInTheDocument()
+  })
+  it('shows no discount for expression-priced models', () => {
+    const model = pricingModel({
+      billing_mode: 'tiered_expr',
+      billing_expr: 'tier("standard", p * 5 + c * 30)',
+      official_input_price: 4,
+      official_output_price: 12,
+    })
+    render(<ModelCard model={model} onClick={vi.fn()} tokenUnit='M' />)
+
+    expect(screen.queryByText(/% off$/)).not.toBeInTheDocument()
+  })
   it('shows fixed prices per request in both token display units', () => {
     const model = pricingModel({
       billing_mode: 'tiered_expr',
