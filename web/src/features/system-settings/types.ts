@@ -489,3 +489,33 @@ export type UpstreamRatiosResponse = {
     test_results: TestResult[]
   }
 }
+
+/**
+ * One of our models next to the published rate the preset carries for it, in
+ * USD per million tokens. `configured_*` is what the square already shows.
+ */
+export type OfficialPriceCandidate = {
+  model_name: string
+  preset_input: number
+  preset_output: number
+  configured_input: number
+  configured_output: number
+}
+
+export type OfficialPricePreview = {
+  candidates: OfficialPriceCandidate[]
+  /** Our models the preset carries no usable rate for. */
+  unavailable: string[]
+}
+
+export type OfficialPricePreviewResponse = {
+  success: boolean
+  message: string
+  data?: OfficialPricePreview
+}
+
+export type OfficialPriceApplyResponse = {
+  success: boolean
+  message: string
+  data?: { updated: number }
+}

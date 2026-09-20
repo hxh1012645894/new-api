@@ -22,6 +22,8 @@ import type {
   ConfirmPaymentComplianceResponse,
   FetchUpstreamRatiosRequest,
   LogCleanupTask,
+  OfficialPriceApplyResponse,
+  OfficialPricePreviewResponse,
   SystemOptionsResponse,
   SystemTaskListResponse,
   SystemTaskFilters,
@@ -122,6 +124,23 @@ export async function fetchUpstreamRatios(request: FetchUpstreamRatiosRequest) {
   const res = await api.post<UpstreamRatiosResponse>(
     '/api/ratio_sync/fetch',
     request
+  )
+  return res.data
+}
+
+// The server fetches the published-rate preset on both calls, so these can take
+// as long as a remote request does; the shared client sets no timeout.
+export async function previewOfficialPrices() {
+  const res = await api.post<OfficialPricePreviewResponse>(
+    '/api/option/official_price/preview'
+  )
+  return res.data
+}
+
+export async function applyOfficialPrices(models: string[]) {
+  const res = await api.post<OfficialPriceApplyResponse>(
+    '/api/option/official_price/apply',
+    { models }
   )
   return res.data
 }
