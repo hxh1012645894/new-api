@@ -141,7 +141,7 @@ export function AmountOptionsVisualEditor({
           <Input
             id='new-amount'
             type='number'
-            step='0.01'
+            step='any'
             min='0'
             placeholder={t('e.g., 100')}
             value={newAmount}

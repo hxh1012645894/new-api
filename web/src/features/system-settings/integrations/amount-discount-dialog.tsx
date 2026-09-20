@@ -182,7 +182,7 @@ export function AmountDiscountDialog({
                 <FormControl>
                   <Input
                     type='number'
-                    step='0.01'
+                    step='any'
                     min='0.01'
                     max='1'
                     placeholder={t('e.g., 0.95')}

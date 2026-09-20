@@ -298,7 +298,7 @@ export function PaymentMethodDialog({
                 <FormControl>
                   <Input
                     type='number'
-                    step='0.01'
+                    step='any'
                     placeholder={t('e.g., 50')}
                     {...field}
                   />

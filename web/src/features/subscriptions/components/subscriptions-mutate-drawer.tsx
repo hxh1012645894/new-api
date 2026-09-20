@@ -339,7 +339,7 @@ export function SubscriptionsMutateDrawer({
                         <Input
                           {...field}
                           type='number'
-                          step='0.01'
+                          step='any'
                           min={0}
                           onChange={(e) =>
                             field.onChange(
@@ -371,7 +371,7 @@ export function SubscriptionsMutateDrawer({
                           {...field}
                           type='number'
                           min={0}
-                          step={tokensOnly ? 1 : 0.01}
+                          step={tokensOnly ? 1 : 'any'}
                           placeholder={
                             tokensOnly
                               ? t('Enter quota in tokens')

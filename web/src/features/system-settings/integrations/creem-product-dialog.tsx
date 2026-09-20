@@ -224,7 +224,7 @@ export function CreemProductDialog({
                   <FormControl>
                     <Input
                       type='number'
-                      step='0.01'
+                      step='any'
                       min={0.01}
                       placeholder='10.00'
                       {...safeNumberFieldProps(field)}

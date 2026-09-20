@@ -168,7 +168,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                     <FormControl>
                       <Input
                         type='number'
-                        step='0.01'
+                        step='any'
                         value={field.value as number}
                         disabled
                         name={field.name}
@@ -245,7 +245,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                     <FormControl>
                       <Input
                         type='number'
-                        step='0.01'
+                        step='any'
                         {...safeNumberFieldProps(field)}
                       />
                     </FormControl>
@@ -296,7 +296,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                       <FormControl>
                         <Input
                           type='number'
-                          step='0.01'
+                          step='any'
                           value={field.value ?? ''}
                           onChange={(e) =>
                             field.onChange(

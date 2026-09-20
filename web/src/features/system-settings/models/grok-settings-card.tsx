@@ -185,7 +185,7 @@ export function GrokSettingsCard(props: Props) {
                 <FormControl>
                   <Input
                     type='number'
-                    step={0.01}
+                    step='any'
                     min={0}
                     {...safeNumberFieldProps(field)}
                     disabled={!enabled}
