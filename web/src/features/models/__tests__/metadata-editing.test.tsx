@@ -286,6 +286,43 @@ describe('model pricing entry', () => {
 })
 
 describe('metadata editing', () => {
+  // The browser runs native constraint validation before it fires `submit`, so
+  // a field the form rejects stops the save with no visible error at all. A
+  // published price needs more than two decimals, which a `step` constraint
+  // would reject.
+  it('accepts a published price that is not a multiple of a cent', async () => {
+    useAuthStore.getState().auth.setUser({ id: 2, username: 'admin', role: 10 })
+    vi.spyOn(api, 'get').mockResolvedValue({
+      data: { success: true, data: { items: [] } },
+    })
+    const client = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <ModelMutateDrawer open onOpenChange={vi.fn()} />
+      </QueryClientProvider>
+    )
+    const user = userEvent.setup()
+    const input = screen.getByLabelText<HTMLInputElement>(
+      'Official input price'
+    )
+    const output = screen.getByLabelText<HTMLInputElement>(
+      'Official output price'
+    )
+    await user.type(input, '0.1369863')
+    await user.type(output, '0.5479452')
+
+    expect(input).toHaveValue(0.1369863)
+    expect(output).toHaveValue(0.5479452)
+    expect(input.checkValidity()).toBe(true)
+    expect(output.checkValidity()).toBe(true)
+    expect(input.closest('form')?.checkValidity() ?? true).toBe(true)
+  })
+
   it.each([
     {
       name: 'business rejection',

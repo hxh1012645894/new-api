@@ -614,7 +614,7 @@ export function ModelMutateDrawer(props: {
                               <Input
                                 type='number'
                                 min='0'
-                                step='0.01'
+                                step='any'
                                 {...field}
                                 value={
                                   field.value == null ? '' : String(field.value)
@@ -641,7 +641,7 @@ export function ModelMutateDrawer(props: {
                               <Input
                                 type='number'
                                 min='0'
-                                step='0.01'
+                                step='any'
                                 {...field}
                                 value={
                                   field.value == null ? '' : String(field.value)
