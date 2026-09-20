@@ -41,6 +41,7 @@ import { useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { CopyButton } from '@/components/copy-button'
 import { SectionPageLayout } from '@/components/layout'
 import {
   CardStaggerContainer,
@@ -396,7 +397,25 @@ function RequestPreview(props: {
       </div>
 
       <div className='bg-foreground/[0.035] my-3 rounded-xl p-3 font-mono text-xs'>
-        <div className='mb-2 flex items-center justify-between gap-2'>
+        <div className='border-border/60 flex items-center gap-2 border-b pb-2'>
+          <span className='text-muted-foreground font-sans text-[11px] font-medium tracking-wide uppercase'>
+            {t('Base URL')}
+          </span>
+          <code
+            className='text-foreground min-w-0 flex-1 truncate text-xs font-semibold'
+            title={props.example.baseUrl}
+          >
+            {props.example.baseUrl}
+          </code>
+          <CopyButton
+            value={props.example.baseUrl}
+            className='size-5 shrink-0'
+            iconClassName='size-3'
+            tooltip={t('Copy URL')}
+            aria-label={t('Copy URL')}
+          />
+        </div>
+        <div className='mt-2 mb-2 flex items-center justify-between gap-2'>
           <div className='flex items-center gap-1.5'>
             <span className='bg-destructive size-2 rounded-full' />
             <span className='bg-warning size-2 rounded-full' />

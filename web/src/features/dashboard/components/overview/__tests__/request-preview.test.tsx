@@ -23,7 +23,7 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -163,5 +163,18 @@ describe('overview request preview', () => {
     expect(await readRequestPreview()).toContain(
       'curl https://gateway.example.com/v1/chat/completions'
     )
+  })
+
+  it('surfaces the base URL as its own copyable value', async () => {
+    apiInfo = [{ url: 'https://gateway.example.com/v1' }]
+    await renderOverview()
+
+    const baseUrl = await screen.findByText('https://gateway.example.com')
+    expect(baseUrl).toBeVisible()
+    expect(
+      within(baseUrl.parentElement as HTMLElement).getByRole('button', {
+        name: 'Copy URL',
+      })
+    ).toBeVisible()
   })
 })
