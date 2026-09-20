@@ -35,10 +35,16 @@ import {
   getDynamicPriceUnitLabelKey,
   getDynamicPricingSummary,
   isUnconfiguredTaskUsageModel,
+  officialPricesForEntries,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
 import { isTokenBasedModel } from '../lib/model-helpers'
-import { formatPrice, formatRequestPrice, officialPriceFor } from '../lib/price'
+import {
+  formatPrice,
+  formatRequestPrice,
+  officialPriceFor,
+  type OfficialPrice,
+} from '../lib/price'
 import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
@@ -108,6 +114,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     [props.model, dynamicPriceOptions, pricingCurrencyKey]
   )
   let priceSummary: ReactNode
+  let officialPrices: Array<OfficialPrice | null> = []
   if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
       priceSummary = (
@@ -121,50 +128,60 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         </div>
       )
     } else if (dynamicSummary.primaryEntries.length > 0) {
+      const shownEntries = dynamicSummary.primaryEntries.slice(
+        0,
+        dynamicSummary.providerCount ? 2 : undefined
+      )
+      officialPrices = officialPricesForEntries(
+        props.model,
+        shownEntries,
+        dynamicPriceOptions
+      )
       priceSummary = (
         <>
-          {dynamicSummary.primaryEntries
-            .slice(0, dynamicSummary.providerCount ? 2 : undefined)
-            .map((entry) => {
-              const unitLabelKey = getDynamicPriceUnitLabelKey(entry)
-              const unitLabel = taskUsageUnitLabel(
-                entry,
-                i18n.language,
-                unitLabelKey ? t(unitLabelKey) : tokenUnitLabel
+          {shownEntries.map((entry, index) => {
+            const unitLabelKey = getDynamicPriceUnitLabelKey(entry)
+            const unitLabel = taskUsageUnitLabel(
+              entry,
+              i18n.language,
+              unitLabelKey ? t(unitLabelKey) : tokenUnitLabel
+            )
+            let label: ReactNode = null
+            if (entry.labelKind !== 'schema') {
+              label = t(entry.shortLabel)
+            } else {
+              label = taskPriceLabel(
+                entry.description,
+                entry.shortLabel,
+                i18n.language
               )
-              let label: ReactNode = null
-              if (entry.labelKind !== 'schema') {
-                label = t(entry.shortLabel)
-              } else {
-                label = taskPriceLabel(
-                  entry.description,
-                  entry.shortLabel,
-                  i18n.language
-                )
-              }
-              return (
-                <div
-                  key={entry.key}
-                  className={cn(
-                    'flex min-w-0 flex-col gap-1',
-                    dynamicSummary.isTaskUsage && 'col-span-full'
-                  )}
-                >
-                  {label && (
-                    <span className='text-muted-foreground text-xs break-words whitespace-normal'>
-                      {label}
-                    </span>
-                  )}
-                  <span className='flex flex-wrap items-baseline gap-x-1 font-mono text-sm font-semibold tabular-nums'>
-                    <span>{entry.formattedRange ?? entry.formatted}</span>
-                    <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
-                      {' '}
-                      / {unitLabel}
-                    </span>
+            }
+            return (
+              <div
+                key={entry.key}
+                className={cn(
+                  'flex min-w-0 flex-col gap-1',
+                  dynamicSummary.isTaskUsage && 'col-span-full'
+                )}
+              >
+                {label && (
+                  <span className='text-muted-foreground text-xs break-words whitespace-normal'>
+                    {label}
                   </span>
-                </div>
-              )
-            })}
+                )}
+                {officialPrices[index] && (
+                  <OfficialPriceStrike official={officialPrices[index]} />
+                )}
+                <span className='flex flex-wrap items-baseline gap-x-1 font-mono text-sm font-semibold tabular-nums'>
+                  <span>{entry.formattedRange ?? entry.formatted}</span>
+                  <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
+                    {' '}
+                    / {unitLabel}
+                  </span>
+                </span>
+              </div>
+            )
+          })}
           {dynamicSummary.isTimePricing && (
             <span className='text-muted-foreground col-span-full text-xs'>
               {t('Current period price')}
@@ -214,19 +231,21 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         ? [{ type: 'cache' as const, label: t('Cached') }]
         : []),
     ]
-    priceSummary = prices.map((price) => {
-      const official =
-        price.type === 'input' || price.type === 'output'
-          ? officialPriceFor(
-              props.model,
-              price.type,
-              tokenUnit,
-              showRechargePrice,
-              priceRate,
-              usdExchangeRate,
-              props.selectedGroup
-            )
-          : null
+    officialPrices = prices.map((price) =>
+      price.type === 'input' || price.type === 'output'
+        ? officialPriceFor(
+            props.model,
+            price.type,
+            tokenUnit,
+            showRechargePrice,
+            priceRate,
+            usdExchangeRate,
+            props.selectedGroup
+          )
+        : null
+    )
+    priceSummary = prices.map((price, index) => {
+      const official = officialPrices[index]
       return (
         <div key={price.type} className='flex min-w-0 flex-col gap-1'>
           <span className='text-muted-foreground text-xs'>{price.label}</span>
@@ -334,19 +353,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           className='mt-auto flex min-w-0 flex-col gap-1.5'
         >
           <ModelBillingModeBadge model={props.model} appearance='caption' />
-          <DiscountBadge
-            official={(['input', 'output'] as const).map((type) =>
-              officialPriceFor(
-                props.model,
-                type,
-                tokenUnit,
-                showRechargePrice,
-                priceRate,
-                usdExchangeRate,
-                props.selectedGroup
-              )
-            )}
-          />
+          <DiscountBadge official={officialPrices} />
           {dynamicSummary?.providerCount && (
             <span className='text-muted-foreground text-xs break-words'>
               {t('{{count}} providers', {

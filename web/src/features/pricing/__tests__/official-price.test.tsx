@@ -29,8 +29,7 @@ import {
   DiscountBadge,
   OfficialPriceStrike,
 } from '../components/official-price'
-import type { OfficialPrice } from '../lib/price'
-import { officialPriceFor } from '../lib/price'
+import { officialPriceFor, type OfficialPrice } from '../lib/price'
 import type { PricingModel } from '../types'
 
 function pricingModel(overrides: Partial<PricingModel> = {}): PricingModel {
@@ -190,6 +189,54 @@ describe('pricing square cell', () => {
 
   test('keeps the plain price when nothing is published', () => {
     render(<ModelPriceCell model={pricingModel()} />)
+
+    expect(screen.queryByText(/% off$/)).not.toBeInTheDocument()
+  })
+})
+
+describe('expression-priced square cell', () => {
+  beforeEach(() => {
+    useSystemConfigStore.getState().setConfig({
+      currency: { ...DEFAULT_CURRENCY_CONFIG, quotaDisplayType: 'USD' },
+    })
+  })
+
+  afterEach(() => {
+    useSystemConfigStore.getState().setConfig({
+      currency: { ...DEFAULT_CURRENCY_CONFIG },
+    })
+  })
+
+  // Expression prices come from the parsed tier coefficients, not the ratio
+  // table, so this is the path every model in the catalog actually takes.
+  function expressionModel(overrides: Partial<PricingModel> = {}) {
+    return pricingModel({
+      billing_mode: 'tiered_expr',
+      billing_expr: 'tier("standard", p * 0.2 + c * 0.8)',
+      official_input_price: 0.5,
+      official_output_price: 2,
+      ...overrides,
+    })
+  }
+
+  test('measures the discount against the parsed expression prices', () => {
+    render(<ModelPriceCell model={expressionModel()} />)
+
+    // Charges are $0.20 and $0.80 per 1M against published $0.50 and $2.00.
+    expect(screen.getByText('0.5')).toHaveClass('line-through')
+    expect(screen.getByText('2')).toHaveClass('line-through')
+    expect(screen.getByText('60% off')).toBeVisible()
+  })
+
+  test('shows no discount when the model publishes no list price', () => {
+    render(
+      <ModelPriceCell
+        model={expressionModel({
+          official_input_price: undefined,
+          official_output_price: undefined,
+        })}
+      />
+    )
 
     expect(screen.queryByText(/% off$/)).not.toBeInTheDocument()
   })

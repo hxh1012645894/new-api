@@ -29,6 +29,7 @@ import {
   getDynamicPriceUnitLabelKey,
   getDynamicPricingSummary,
   isUnconfiguredTaskUsageModel,
+  officialPricesForEntries,
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
 import {
@@ -61,20 +62,19 @@ export function ModelPriceCell(props: {
   const tokenUnit = options.tokenUnit ?? DEFAULT_TOKEN_UNIT
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
   const billingTime = useBillingTime(props.model.billing_expr)
-  const dynamic = useMemo(
-    () =>
-      getDynamicPricingSummary(props.model, {
-        priceRate: options.priceRate,
-        usdExchangeRate: options.usdExchangeRate,
-        showRechargePrice: options.showRechargePrice,
-        now: billingTime === undefined ? undefined : new Date(billingTime),
-        tokenUnit,
-        showCurrencySymbol: false,
-        groupRatioMultiplier: getDynamicDisplayGroupRatio(
-          props.model,
-          options.selectedGroup
-        ),
-      }),
+  const dynamicOptions = useMemo(
+    () => ({
+      priceRate: options.priceRate,
+      usdExchangeRate: options.usdExchangeRate,
+      showRechargePrice: options.showRechargePrice,
+      now: billingTime === undefined ? undefined : new Date(billingTime),
+      tokenUnit,
+      showCurrencySymbol: false,
+      groupRatioMultiplier: getDynamicDisplayGroupRatio(
+        props.model,
+        options.selectedGroup
+      ),
+    }),
     // Currency is read indirectly by the price formatter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -87,6 +87,10 @@ export function ModelPriceCell(props: {
       billingTime,
       pricingCurrencyKey,
     ]
+  )
+  const dynamic = useMemo(
+    () => getDynamicPricingSummary(props.model, dynamicOptions),
+    [props.model, dynamicOptions]
   )
   let metrics: Array<{
     label: string
@@ -129,27 +133,34 @@ export function ModelPriceCell(props: {
     const hasRequestPrice = dynamic.primaryEntries.some(
       (entry) => entry.unit === 'request' || entry.unit === 'image'
     )
-    metrics = dynamic.primaryEntries
-      .slice(0, hasRequestPrice ? 3 : 2)
-      .map((entry) => {
-        const unit = getDynamicPriceUnitLabelKey(entry)
-        const unitLabel = taskUsageUnitLabel(
-          entry,
-          i18n.language,
-          unit ? t(unit) : ''
-        )
-        let suffix = unitLabel ? `/${unitLabel}` : ''
-        if (hasRequestPrice && entry.unit === 'token') {
-          suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
-        }
-        return {
-          label:
-            entry.labelKind === 'schema'
-              ? entry.shortLabel
-              : t(entry.shortLabel),
-          value: `${entry.formattedRange ?? entry.formatted}${suffix}`,
-        }
-      })
+    const shownEntries = dynamic.primaryEntries.slice(
+      0,
+      hasRequestPrice ? 3 : 2
+    )
+    const officialPrices = officialPricesForEntries(
+      props.model,
+      shownEntries,
+      dynamicOptions,
+      false
+    )
+    metrics = shownEntries.map((entry, index) => {
+      const unit = getDynamicPriceUnitLabelKey(entry)
+      const unitLabel = taskUsageUnitLabel(
+        entry,
+        i18n.language,
+        unit ? t(unit) : ''
+      )
+      let suffix = unitLabel ? `/${unitLabel}` : ''
+      if (hasRequestPrice && entry.unit === 'token') {
+        suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
+      }
+      return {
+        label:
+          entry.labelKind === 'schema' ? entry.shortLabel : t(entry.shortLabel),
+        value: `${entry.formattedRange ?? entry.formatted}${suffix}`,
+        official: officialPrices[index],
+      }
+    })
     if (metrics.length === 0) {
       return (
         <span className='text-muted-foreground text-sm'>

@@ -40,6 +40,11 @@ import { compileBillingExpression } from './billing-expression/parser'
 import { getDisplayGroupRatio } from './model-helpers'
 import { withPluginPricing } from './plugin-pricing'
 import {
+  officialPriceAgainst,
+  officialPriceForLane,
+  type OfficialPrice,
+} from './price'
+import {
   evaluateTaskVisualConfig,
   getTaskNumberFields,
   tryParseTaskVisualConfig,
@@ -220,6 +225,39 @@ export function formatDynamicUnitPrice(
     digitsSmall: 6,
     abbreviate: false,
   })
+}
+
+/**
+ * Published list price for each of a set of token lanes.
+ *
+ * Expression prices come from the parsed tier coefficients, so the discount is
+ * measured against what the square actually charges for that lane; the ratio
+ * table plays no part. Lanes without a published counterpart — cache, media,
+ * per-request — get null.
+ */
+export function officialPricesForEntries(
+  model: PricingModel,
+  entries: DynamicPriceEntry[],
+  options: DynamicPriceOptions,
+  showCurrencySymbol = true
+): Array<OfficialPrice | null> {
+  return entries.map((entry) =>
+    entry.unit === 'token'
+      ? officialPriceAgainst({
+          ourPerMillionUSD: entry.value,
+          officialPerMillionUSD: officialPriceForLane(
+            model,
+            entry.variable?.side
+          ),
+          tokenUnit: options.tokenUnit,
+          groupRatioMultiplier: options.groupRatioMultiplier,
+          showWithRecharge: options.showRechargePrice,
+          priceRate: options.priceRate,
+          usdExchangeRate: options.usdExchangeRate,
+          showCurrencySymbol,
+        })
+      : null
+  )
 }
 
 export function formatTaskUsageUnitPrice(

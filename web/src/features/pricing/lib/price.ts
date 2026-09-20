@@ -182,14 +182,82 @@ export type OfficialPrice = {
 }
 
 /**
- * Published list price for one lane, and how far our configured price sits
- * below it.
+ * Published list price for a lane, measured against the price we charge.
  *
- * Both numbers go through the same group ratio and recharge adjustment as
- * `formatPrice`, so the strikethrough stays comparable with the charge the
- * caller is displaying next to it. Returns null when the model publishes no
- * price for that lane, or when our price is not actually below it — there is
- * nothing to strike through or advertise in either case.
+ * `ourPerMillionUSD` is our own rate for that lane in USD per million tokens,
+ * before the group ratio; the published price is the vendor's number and takes
+ * no group ratio. Both sides then take the same recharge adjustment, so the
+ * strikethrough stays comparable with the charge displayed next to it.
+ *
+ * Returns null when the model publishes no price for the lane, or when our
+ * price is not actually below it — there is nothing to strike through or
+ * advertise in either case.
+ */
+export function officialPriceAgainst(args: {
+  ourPerMillionUSD: number
+  officialPerMillionUSD?: number | null
+  tokenUnit: TokenUnit
+  groupRatioMultiplier?: number
+  showWithRecharge?: boolean
+  priceRate?: number
+  usdExchangeRate?: number
+  showCurrencySymbol?: boolean
+}): OfficialPrice | null {
+  const official = args.officialPerMillionUSD
+  if (!official || official <= 0) return null
+
+  const adjust = (usd: number) =>
+    applyRechargeRate(
+      usd,
+      args.showWithRecharge ?? false,
+      args.priceRate ?? 1,
+      args.usdExchangeRate ?? 1
+    )
+
+  const officialUSD = adjust(official)
+  const oursUSD = adjust(
+    args.ourPerMillionUSD * (args.groupRatioMultiplier ?? 1)
+  )
+  if (!Number.isFinite(officialUSD) || officialUSD <= 0) return null
+  if (!Number.isFinite(oursUSD)) return null
+
+  const discount = 1 - oursUSD / officialUSD
+  if (discount <= 0) return null
+
+  return {
+    formatted: formatPricingCurrencyFromUSD(
+      officialUSD / TOKEN_UNIT_DIVISORS[args.tokenUnit],
+      {
+        showSymbol: args.showCurrencySymbol ?? true,
+        digitsLarge: 4,
+        digitsSmall: 6,
+        abbreviate: false,
+      }
+    ),
+    discount,
+  }
+}
+
+/**
+ * The published list price behind a lane, if the model carries one. Only the
+ * input and output lanes have a published counterpart; cache and media lanes
+ * have nothing to compare against.
+ */
+export function officialPriceForLane(
+  model: PricingModel,
+  lane: 'input' | 'output' | 'condition' | undefined
+): number | undefined {
+  if (lane === 'input') return model.official_input_price
+  if (lane === 'output') return model.official_output_price
+  return undefined
+}
+
+/**
+ * Published list price for a ratio-priced model's lane.
+ *
+ * Expression-priced models do not charge the ratio table at all, so they are
+ * rejected here; their discount is measured from the parsed expression instead
+ * (see `officialPriceAgainst`).
  */
 export function officialPriceFor(
   model: PricingModel,
@@ -202,39 +270,21 @@ export function officialPriceFor(
   showCurrencySymbol = true
 ): OfficialPrice | null {
   if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) return null
-  // Expression-priced models do not charge the ratio table at all, so a
-  // discount computed from `model_ratio` would be fiction.
   if (model.billing_mode === 'tiered_expr') return null
 
-  const official =
-    type === 'input' ? model.official_input_price : model.official_output_price
-  if (!official || official <= 0) return null
-
-  const adjust = (usd: number) =>
-    applyRechargeRate(usd, showWithRecharge, priceRate, usdExchangeRate)
-
-  const officialUSD = adjust(official)
-  const oursUSD = adjust(
-    calculateTokenPrice(model, type, getDisplayGroupRatio(model, selectedGroup))
-  )
-  if (!Number.isFinite(officialUSD) || officialUSD <= 0) return null
-  if (!Number.isFinite(oursUSD)) return null
-
-  const discount = 1 - oursUSD / officialUSD
-  if (discount <= 0) return null
-
-  return {
-    formatted: formatPricingCurrencyFromUSD(
-      officialUSD / TOKEN_UNIT_DIVISORS[tokenUnit],
-      {
-        showSymbol: showCurrencySymbol,
-        digitsLarge: 4,
-        digitsSmall: 6,
-        abbreviate: false,
-      }
-    ),
-    discount,
-  }
+  return officialPriceAgainst({
+    ourPerMillionUSD: calculateTokenPrice(model, type, 1),
+    officialPerMillionUSD:
+      type === 'input'
+        ? model.official_input_price
+        : model.official_output_price,
+    tokenUnit,
+    groupRatioMultiplier: getDisplayGroupRatio(model, selectedGroup),
+    showWithRecharge,
+    priceRate,
+    usdExchangeRate,
+    showCurrencySymbol,
+  })
 }
 
 /**
